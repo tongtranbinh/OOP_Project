@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -30,13 +31,14 @@ public class Main extends ApplicationAdapter {
     public float ViewportWidth = ScreenWidth;
     public float ViewportHeight = ScreenHeight;
 
+    Texture image;
 
     public void create() {
         batch = new SpriteBatch();
         player.setDefaultValue();
         float width = Gdx.graphics.getWidth();
         float height = Gdx.graphics.getHeight();
-
+        image = new Texture("libgdx.png");
         Camera = new OrthographicCamera(ViewportWidth, ViewportHeight * height/width);
         Camera.position.set(player.x,player.y,0);
         Camera.update();
@@ -58,7 +60,9 @@ public class Main extends ApplicationAdapter {
         renderCamera();
         player.update();
         batch.begin();
+        batch.draw(image,0,0,1000,1000);
         renderPlayer();
+
         batch.end();
     }
 
