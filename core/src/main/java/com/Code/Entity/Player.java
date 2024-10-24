@@ -85,5 +85,13 @@ public class Player {
             x += move.x * speed ;
             y += move.y * speed ;
         }
+
+
+        if(Gdx.input.isKeyPressed(Input.Keys.J)){
+            if(direction == 0) Image = Animation.up.get(cnt);
+            if(direction == 1) Image = Animation.left.get(cnt);
+            if(direction == 2) Image = Animation.down.get(cnt);
+            if(direction == 3) Image = Animation.right.get(cnt);
+        }
     }
 }
