@@ -9,9 +9,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
+
 
 import java.util.ArrayList;
 
@@ -30,15 +32,18 @@ public class Main extends ApplicationAdapter {
     OrthographicCamera Camera = new OrthographicCamera();
     public float ViewportWidth = ScreenWidth;
     public float ViewportHeight = ScreenHeight;
+    OrthogonalTiledMapRenderer mapRenderer;
+    TiledMap map;
 
-    Texture image;
 
     public void create() {
         batch = new SpriteBatch();
         player.setDefaultValue();
         float width = Gdx.graphics.getWidth();
         float height = Gdx.graphics.getHeight();
-        image = new Texture("libgdx.png");
+        map = new TmxMapLoader().load("Test.tmx");
+        mapRenderer = new OrthogonalTiledMapRenderer(map);
+
         Camera = new OrthographicCamera(ViewportWidth, ViewportHeight * height/width);
         Camera.position.set(player.x,player.y,0);
         Camera.update();
@@ -58,10 +63,11 @@ public class Main extends ApplicationAdapter {
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT|GL20.GL_DEPTH_BUFFER_BIT);
         renderCamera();
+        mapRenderer.render();
         player.update();
         batch.begin();
-        batch.draw(image,0,0,1000,1000);
         renderPlayer();
+        mapRenderer.setView(Camera);
 
         batch.end();
     }
