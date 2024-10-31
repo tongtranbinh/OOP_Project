@@ -23,6 +23,9 @@ import java.util.ArrayList;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends Game {
+
+    public int BaseSize = 16;
+    public int ScreenWidth = 1600,ScreenHeight = 900;
     public SpriteBatch batch;
 
     @Override

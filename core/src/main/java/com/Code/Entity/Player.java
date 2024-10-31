@@ -23,5 +23,8 @@ public class Player {
         direction = 2;
     }
 
+    public void update(){
+
+    }
     // direction WASD = 0123
 }
