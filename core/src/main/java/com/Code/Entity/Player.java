@@ -23,7 +23,7 @@ public class Player {
     {
         this.playerBox = playerBox;
         playerPosition = playerBox.playerBody.getPosition();
-        speed = 50;
+        speed = 100;
         direction = 2;
         playerController = new PlayerController(this);
     }
@@ -35,7 +35,7 @@ public class Player {
         updatePlayerValue.y -= playerBox.playerBody.getLinearVelocity().y;
         playerBox.playerBody.applyLinearImpulse(updatePlayerValue,playerBox.playerBody.getWorldCenter(),true);
         playerPosition = playerBox.playerBody.getPosition();
-        System.out.println(playerBox.playerBody.getLinearVelocity());
+        //System.out.println(playerBox.playerBody.getLinearVelocity());
     }
     // direction WASD = 0123
 }
