@@ -10,7 +10,7 @@ public class Maploader {
 
     public TiledMap CreateMap(){
 
-        map = mapLoader.load("The_Forest_Of_Dream/The_Forest_Of_Dream.tmx");
+        map = mapLoader.load("laboratory/Starting.tmx");
         return map;
     }
 }

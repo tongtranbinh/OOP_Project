@@ -2,6 +2,7 @@ package com.Code.Image;
 
 import com.Code.Entity.Player;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import java.util.ArrayList;
 
@@ -21,6 +22,7 @@ public class PlayerImage {
 
     Player player;
     public Texture Sprites;
+    //TextureRegion sprites = new TextureRegion();
 
     public PlayerImage() {
         for(int i = 0; i <= 11 ; i++)
