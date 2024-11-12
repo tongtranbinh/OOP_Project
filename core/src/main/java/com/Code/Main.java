@@ -1,5 +1,6 @@
 package com.Code;
 
+import com.Code.Entity.Player;
 import com.Code.Screens.PlayScreen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,6 +15,7 @@ public class Main extends Game {
     public int BaseSize = 32;
     public int ScreenWidth = 1600,ScreenHeight = 900;
     public SpriteBatch batch;
+    public Player player;
 
     @Override
     public void create() {

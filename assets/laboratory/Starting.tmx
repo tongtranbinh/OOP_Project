@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="34" height="23" tilewidth="16" tileheight="16" infinite="0" nextlayerid="8" nextobjectid="9">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="34" height="23" tilewidth="16" tileheight="16" infinite="0" nextlayerid="8" nextobjectid="17">
  <tileset firstgid="1" source="tilesFloor.tsx"/>
  <tileset firstgid="199" source="tilesWalls.tsx"/>
  <tileset firstgid="391" source="tilesStuff.tsx"/>
@@ -138,17 +138,17 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
+ <objectgroup id="7" name="Player">
+  <object id="5" name="Starting Point" x="272" y="190">
+   <point/>
+  </object>
+ </objectgroup>
  <objectgroup id="6" name="Collision">
   <object id="1" x="16.6667" y="48.6667">
    <polygon points="0,0 -2,254.667 202.667,256 202,269.333 -16.6667,268 -17.3333,-50 526.667,-49.3333 528.667,271.333 289.333,269.333 288.667,256.667 510.667,254.667 509.333,32 494,30.6667 494,16 304.667,14.6667 302,0.666667"/>
   </object>
-  <object id="6" x="38.6667" y="76"/>
-  <object id="7" x="88" y="77.3333"/>
-  <object id="8" x="137.333" y="75.3333"/>
- </objectgroup>
- <objectgroup id="7" name="Player">
-  <object id="5" name="Starting Point" x="263.333" y="194">
-   <point/>
-  </object>
+  <object id="14" x="32" y="48" width="16" height="32"/>
+  <object id="15" x="80" y="48" width="16" height="32"/>
+  <object id="16" x="128" y="48" width="16" height="32"/>
  </objectgroup>
 </map>

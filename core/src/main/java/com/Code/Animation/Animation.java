@@ -1,13 +1,17 @@
 package com.Code.Animation;
 
+import com.Code.Main;
 import com.badlogic.gdx.graphics.Texture;
 
 
 public class Animation {
-    public PlayerAnimation playerAnimation = new PlayerAnimation();
+    Main game;
+    public PlayerAnimation playerAnimation;
     public Texture playerSprite;
 
-    public Animation(){
+    public Animation(Main game){
+        this.game = game;
+        playerAnimation = new PlayerAnimation(game);
         playerAnimation.CreatePlayerAnimation();
 
 
