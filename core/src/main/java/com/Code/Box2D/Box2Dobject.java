@@ -59,14 +59,14 @@ public class Box2Dobject extends Sprite {
                 cShape.createLoop(verticles);
 
                 bodyDef.type = BodyDef.BodyType.StaticBody;
-                bodyDef.position.set(polygon.getX(), polygon.getY());
-
+                bodyDef.position.set(polygon.getOriginX(), polygon.getOriginY());
                 body = world.createBody(bodyDef);
 
                 fixtureDef.shape = cShape;
-
                 body.createFixture(fixtureDef);
+
                 cShape.dispose();
+                //System.out.println(polygon.getOriginX() + "   " + polygon.getOriginY());
             }
 
         }
@@ -101,7 +101,7 @@ public class Box2Dobject extends Sprite {
         shape.setRadius(8);
         fixtureDef.shape = shape;
         playerBody.createFixture(fixtureDef);
-
+        System.out.println(playerX + "   " + playerY);
     }
 
 }

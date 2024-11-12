@@ -56,7 +56,6 @@ public class PlayScreen implements Screen {
         box2Dobject.CreatePlayer();
 
         game.player = new Player(box2Dobject);
-
         animation = new Animation(game);
 
     }
