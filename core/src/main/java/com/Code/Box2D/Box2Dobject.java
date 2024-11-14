@@ -104,4 +104,5 @@ public class Box2Dobject extends Sprite {
         System.out.println(playerX + "   " + playerY);
     }
 
+
 }
