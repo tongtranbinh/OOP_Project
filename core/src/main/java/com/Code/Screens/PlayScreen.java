@@ -74,11 +74,11 @@ public class PlayScreen implements Screen {
         mapRenderer.render();
 
         updateWorld();
-        box2Dobject.box2DDebugRenderer.render(box2Dobject.world, Camera.combined);
 
         renderPlayer();
         renderCamera();
         game.batch.setProjectionMatrix(Camera.combined);
+        box2Dobject.box2DDebugRenderer.render(box2Dobject.world, Camera.combined);
 
         game.batch.begin();
         playerSprite.draw(game.batch);
@@ -107,7 +107,10 @@ public class PlayScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        map.dispose();
+        mapRenderer.dispose();
+        world.dispose();
+        box2Dobject.box2DDebugRenderer.dispose();
     }
 
 
