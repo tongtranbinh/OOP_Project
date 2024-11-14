@@ -23,6 +23,7 @@ public class PlayerImage {
     Player player;
     public Texture Sprites;
     //TextureRegion sprites = new TextureRegion();
+    int i=1;
 
     public PlayerImage() {
         for(int i = 0; i <= 11 ; i++)
