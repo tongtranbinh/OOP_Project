@@ -3,6 +3,7 @@ package com.Code.Screens;
 import com.Code.Animation.Animation;
 import com.Code.Animation.PlayerAnimation;
 import com.Code.Box2D.Box2Dobject;
+import com.Code.Box2D.WorldContactListener;
 import com.Code.Entity.Player;
 import com.Code.Main;
 import com.Code.Map.Maploader;
@@ -32,8 +33,6 @@ public class PlayScreen implements Screen {
     Maploader maploader;
     TiledMap map;
 
-    World world;
-    Box2Dobject box2Dobject;
 
 
 
@@ -50,14 +49,15 @@ public class PlayScreen implements Screen {
 
 
         //Create world
-        world = new World(new Vector2(0,0), true);
-        box2Dobject = new Box2Dobject(map, world);
-        box2Dobject.CreateCollision();
-        box2Dobject.CreatePlayer();
+        game.world = new World(new Vector2(0,0), true);
+        game.box2Dobject = new Box2Dobject(map, game.world);
+        game.box2Dobject.CreateCollision();
+        game.box2Dobject.CreatePlayer();
 
-        game.player = new Player(box2Dobject);
+        game.player = new Player(game.box2Dobject);
         animation = new Animation(game);
 
+        game.world.setContactListener(new WorldContactListener(game));
     }
 
     @Override
@@ -71,14 +71,18 @@ public class PlayScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 
-        mapRenderer.render();
+
 
         updateWorld();
 
         renderPlayer();
         renderCamera();
+
         game.batch.setProjectionMatrix(Camera.combined);
-        box2Dobject.box2DDebugRenderer.render(box2Dobject.world, Camera.combined);
+
+        mapRenderer.render();
+        game.box2Dobject.box2DDebugRenderer.render(game.box2Dobject.world, Camera.combined);
+
 
         game.batch.begin();
         playerSprite.draw(game.batch);
@@ -109,8 +113,8 @@ public class PlayScreen implements Screen {
     public void dispose() {
         map.dispose();
         mapRenderer.dispose();
-        world.dispose();
-        box2Dobject.box2DDebugRenderer.dispose();
+        game.world.dispose();
+        game.box2Dobject.box2DDebugRenderer.dispose();
     }
 
 
@@ -132,7 +136,7 @@ public class PlayScreen implements Screen {
 
     public void updateWorld()
     {
-        world.step(1/60f, 6, 2);
+        game.world.step(1/60f, 6, 2);
         game.player.update();
     }
 }

@@ -1,9 +1,7 @@
 package com.Code.Box2D;
 
-import com.Code.Entity.Player;
-import com.Code.Map.Maploader;
+
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.maps.Map;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
@@ -12,7 +10,6 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
 
@@ -26,12 +23,9 @@ public class Box2Dobject extends Sprite {
         this.map = map;
         this.world = world;
     }
-    public void CreateCollision(){
 
-        BodyDef bodyDef = new BodyDef();
-        PolygonShape shape = new PolygonShape();
-        FixtureDef fixtureDef = new FixtureDef();
-        Body body;
+    public InteractTileObject CollisionObject = new InteractTileObject();
+    public void CreateCollision(){
 
         MapLayer collisionsLayer = map.getLayers().get("Collision");
         MapObjects collisions = collisionsLayer.getObjects();
@@ -39,15 +33,15 @@ public class Box2Dobject extends Sprite {
             if(collision instanceof RectangleMapObject) {
                 Rectangle rect = ((RectangleMapObject) collision).getRectangle();
 
-                bodyDef.type = BodyDef.BodyType.StaticBody;
-                bodyDef.position.set(rect.getX() + rect.getWidth() / 2, rect.getY() + rect.getHeight() / 2);
+                CollisionObject.bodyDef.type = BodyDef.BodyType.StaticBody;
+                CollisionObject.bodyDef.position.set(rect.getX() + rect.getWidth() / 2, rect.getY() + rect.getHeight() / 2);
 
-                body = world.createBody(bodyDef);
+                CollisionObject.body = world.createBody(CollisionObject.bodyDef);
 
-                shape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
-                fixtureDef.shape = shape;
+                CollisionObject.polygonShape.setAsBox(rect.getWidth() / 2, rect.getHeight() / 2);
+                CollisionObject.fixtureDef.shape = CollisionObject.polygonShape;
 
-                body.createFixture(fixtureDef);
+                CollisionObject.body.createFixture(CollisionObject.fixtureDef);
             }
             if(collision instanceof PolygonMapObject) {
                 Polygon polygon = ((PolygonMapObject) collision).getPolygon();
@@ -58,27 +52,26 @@ public class Box2Dobject extends Sprite {
                 ChainShape cShape = new ChainShape();
                 cShape.createLoop(verticles);
 
-                bodyDef.type = BodyDef.BodyType.StaticBody;
-                bodyDef.position.set(polygon.getOriginX(), polygon.getOriginY());
-                body = world.createBody(bodyDef);
+                CollisionObject.bodyDef.type = BodyDef.BodyType.StaticBody;
+                CollisionObject.bodyDef.position.set(polygon.getOriginX(), polygon.getOriginY());
+                CollisionObject.body = world.createBody(CollisionObject.bodyDef);
 
-                fixtureDef.shape = cShape;
-                body.createFixture(fixtureDef);
+                CollisionObject.fixtureDef.shape = cShape;
+                CollisionObject.body.createFixture(CollisionObject.fixtureDef);
 
                 cShape.dispose();
                 //System.out.println(polygon.getOriginX() + "   " + polygon.getOriginY());
             }
 
+            CollisionObject.body.setUserData("Collision");
+
         }
     }
 
-    public Body playerBody;
-    public float playerX,playerY;
+    public InteractTileObject playerObject = new InteractTileObject();
     public void CreatePlayer(){
 
-        BodyDef bodyDef = new BodyDef();
-        CircleShape shape = new CircleShape();
-        FixtureDef fixtureDef = new FixtureDef();
+
         MapLayer pointLayer = map.getLayers().get("Player");
         MapObjects box2Dplayers = pointLayer.getObjects();
 
@@ -87,22 +80,25 @@ public class Box2Dobject extends Sprite {
             if(box2Dplayer instanceof RectangleMapObject){
                 RectangleMapObject obj = ((RectangleMapObject) box2Dplayer);
                 Rectangle rect = obj.getRectangle();
-                playerX = rect.getX();
-                playerY = rect.getY();
+                playerObject.objectX = rect.getX();
+                playerObject.objectY = rect.getY();
 
             }
 
         }
 
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(playerX, playerY);
-        playerBody = world.createBody(bodyDef);
+        playerObject.bodyDef.type = BodyDef.BodyType.DynamicBody;
+        playerObject.bodyDef.position.set(playerObject.objectX, playerObject.objectY);
+        playerObject.body = world.createBody(playerObject.bodyDef);
 
-        shape.setRadius(8);
-        fixtureDef.shape = shape;
-        playerBody.createFixture(fixtureDef);
-        System.out.println(playerX + "   " + playerY);
+        playerObject.circleShape.setRadius(8);
+        playerObject.fixtureDef.shape = playerObject.circleShape;
+        playerObject.body.createFixture(playerObject.fixtureDef);
+
+        playerObject.fixtureDef.isSensor = true;
+
+
+        playerObject.body.setUserData("Player");
     }
-
 
 }
