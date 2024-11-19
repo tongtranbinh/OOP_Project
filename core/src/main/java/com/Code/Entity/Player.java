@@ -35,7 +35,6 @@ public class Player {
         updatePlayerValue.y -= playerBox.playerObject.body.getLinearVelocity().y;
         playerBox.playerObject.body.applyLinearImpulse(updatePlayerValue,playerBox.playerObject.body.getWorldCenter(),true);
         playerPosition = playerBox.playerObject.body.getPosition();
-        //System.out.println(playerBox.playerBody.getLinearVelocity());
     }
     // direction WASD = 0123
 }
