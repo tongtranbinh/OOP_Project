@@ -22,7 +22,7 @@ public class Player {
     public Player(Box2Dobject playerBox)
     {
         this.playerBox = playerBox;
-        playerPosition = playerBox.playerBody.getPosition();
+        playerPosition = playerBox.playerObject.body.getPosition();
         speed = 100;
         direction = 2;
         playerController = new PlayerController(this);
@@ -31,10 +31,10 @@ public class Player {
     public void update(){
         Vector2 updatePlayerValue;
         updatePlayerValue = playerController.updatePlayer();
-        updatePlayerValue.x -= playerBox.playerBody.getLinearVelocity().x;
-        updatePlayerValue.y -= playerBox.playerBody.getLinearVelocity().y;
-        playerBox.playerBody.applyLinearImpulse(updatePlayerValue,playerBox.playerBody.getWorldCenter(),true);
-        playerPosition = playerBox.playerBody.getPosition();
+        updatePlayerValue.x -= playerBox.playerObject.body.getLinearVelocity().x;
+        updatePlayerValue.y -= playerBox.playerObject.body.getLinearVelocity().y;
+        playerBox.playerObject.body.applyLinearImpulse(updatePlayerValue,playerBox.playerObject.body.getWorldCenter(),true);
+        playerPosition = playerBox.playerObject.body.getPosition();
         //System.out.println(playerBox.playerBody.getLinearVelocity());
     }
     // direction WASD = 0123

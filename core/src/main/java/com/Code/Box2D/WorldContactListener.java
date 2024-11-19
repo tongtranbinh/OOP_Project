@@ -1,14 +1,46 @@
 package com.Code.Box2D;
 
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Manifold;
+import com.Code.Entity.Player;
+import com.Code.Main;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.*;
 
 public class WorldContactListener implements ContactListener {
+
+    private boolean isPlayer;
+    private boolean isCollision;
+    Main game;
+
+    public WorldContactListener(Main game)
+    {
+        this.game = game;
+    }
+
     @Override
     public void beginContact(Contact contact) {
-        System.out.println("Begin");
+
+        Fixture fixtureA = contact.getFixtureA();
+        Fixture fixtureB = contact.getFixtureB();
+        Fixture fixturePlayer = fixtureA;
+        System.out.println(fixtureA.getBody().getUserData() + " hit " + fixtureB.getBody().getUserData());
+
+        if(fixtureA.getBody().getUserData() == "Player" || fixtureB.getBody().getUserData() == "Player"){
+            isPlayer = true;
+        }
+
+
+        if(fixtureA.getBody().getUserData() == "Collision" || fixtureB.getBody().getUserData() == "Collision"){
+            isCollision = true;
+        }
+
+
+
+
+
+        if(isCollision && isPlayer){
+            PlayerVsCollision(game.box2Dobject);
+        }
+
     }
 
     @Override
@@ -23,6 +55,19 @@ public class WorldContactListener implements ContactListener {
 
     @Override
     public void postSolve(Contact contact, ContactImpulse contactImpulse) {
+
+
+    }
+
+    public void reset()
+    {
+        isPlayer = false;
+        isCollision = false;
+    }
+
+
+    public void PlayerVsCollision(Box2Dobject box2Dobject){
+
 
     }
 }
