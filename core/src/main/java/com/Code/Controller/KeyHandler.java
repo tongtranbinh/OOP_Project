@@ -8,7 +8,7 @@ public class KeyHandler implements InputProcessor {
 
     public int direction = 2;
     public boolean KeyProcessed;
-    public boolean up,left,down,right;
+    public boolean up, left, down, right, isAttack1, isAttack2;
 
     @Override
     public boolean keyDown(int keycode) {
@@ -36,6 +36,16 @@ public class KeyHandler implements InputProcessor {
                 KeyProcessed = true;
                 direction = 3;
                 right = true;
+                break;
+            }
+            case Input.Keys.J:{
+                KeyProcessed = true;
+                isAttack1 = true;
+                break;
+            }
+            case Input.Keys.K:{
+                KeyProcessed = true;
+                isAttack2 = true;
                 break;
             }
         }
@@ -67,6 +77,16 @@ public class KeyHandler implements InputProcessor {
                 KeyProcessed = true;
                 direction = 3;
                 right = false;
+                break;
+            }
+            case Input.Keys.J:{
+                KeyProcessed = true;
+                isAttack1 = false;
+                break;
+            }
+            case Input.Keys.K:{
+                KeyProcessed = true;
+                isAttack2 = false;
                 break;
             }
         }
