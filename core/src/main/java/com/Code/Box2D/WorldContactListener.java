@@ -1,6 +1,5 @@
 package com.Code.Box2D;
 
-import com.Code.Entity.Player;
 import com.Code.Main;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -21,7 +20,7 @@ public class WorldContactListener implements ContactListener {
 
         Fixture fixtureA = contact.getFixtureA();
         Fixture fixtureB = contact.getFixtureB();
-        Fixture fixturePlayer = fixtureA;
+
         System.out.println(fixtureA.getBody().getUserData() + " hit " + fixtureB.getBody().getUserData());
 
         if(fixtureA.getBody().getUserData() == "Player" || fixtureB.getBody().getUserData() == "Player"){
@@ -35,11 +34,6 @@ public class WorldContactListener implements ContactListener {
 
 
 
-
-
-        if(isCollision && isPlayer){
-            PlayerVsCollision(game.box2Dobject);
-        }
 
     }
 
@@ -66,8 +60,4 @@ public class WorldContactListener implements ContactListener {
     }
 
 
-    public void PlayerVsCollision(Box2Dobject box2Dobject){
-
-
-    }
 }

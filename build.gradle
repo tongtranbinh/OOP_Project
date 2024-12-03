@@ -7,10 +7,25 @@ buildscript {
     google()
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
+    maven { url "https://oss.sonatype.org/content/repositories/releases/" }
   }
   dependencies {
+    classpath 'com.android.tools.build:gradle:1.5.0'
+
+  }
+}
 
 
+
+project(":core") {
+  apply plugin: "java"
+
+
+  dependencies {
+    implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+    implementation "com.badlogicgames.box2dlights:box2dlights:$box2dlightsVersion"
+    implementation "com.badlogicgames.ashley:ashley:1.7.0"
   }
 }
 
