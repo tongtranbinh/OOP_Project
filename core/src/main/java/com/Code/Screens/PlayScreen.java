@@ -1,6 +1,7 @@
 package com.Code.Screens;
 
 import com.Code.Entity.ECSEngine;
+import com.Code.Entity.System.PhysicDebugSystem;
 import com.Code.Main;
 import com.Code.Map.MapMangager;
 import com.badlogic.gdx.Gdx;
@@ -14,7 +15,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import static com.Code.Main.MAX_STEP_TIME;
+
 public class PlayScreen implements Screen {
+
 
     Main game;
     OrthographicCamera Camera;
@@ -23,10 +27,10 @@ public class PlayScreen implements Screen {
     OrthogonalTiledMapRenderer mapRenderer;
     MapMangager mapMangager;
 
+    float accumulator = 0;
+
 
     Box2DDebugRenderer box2DDebugRenderer = new Box2DDebugRenderer();
-
-
 
 
     public PlayScreen(Main game){
@@ -35,19 +39,11 @@ public class PlayScreen implements Screen {
         //Create world
 
 
-        Camera = new OrthographicCamera();
+        this.Camera = game.Camera;
         viewport = new FitViewport(game.ScreenWidth * Main.PPM, game.ScreenHeight * Main.PPM, Camera);
         //Map load
         mapMangager = game.mapMangager;
-
         mapRenderer = new OrthogonalTiledMapRenderer(mapMangager.currentMap.tiledMap, 1 * Main.PPM);
-
-
-        //mapMangager.spawnPlayer();
-        //game.world.setContactListener(new WorldContactListener(game));
-
-
-
 
     }
 
@@ -62,18 +58,19 @@ public class PlayScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 
+        updateWorld(delta);
+        game.ecsEngine.update(delta);
 
 
-        updateWorld();
-        mapMangager.ecsEngine.update(1/60f);
 
         renderCamera();
 
+        mapRenderer.setView(Camera);
+        mapRenderer.render();
         game.batch.setProjectionMatrix(Camera.combined);
 
-        mapRenderer.render();
-
         box2DDebugRenderer.render(game.world,Camera.combined);
+
         game.batch.begin();
         game.batch.end();
     }
@@ -105,6 +102,22 @@ public class PlayScreen implements Screen {
         box2DDebugRenderer.dispose();
     }
 
+    public void updateWorld(float delta){
+
+        accumulator += delta;
+
+        // Đảm bảo bước thời gian cố định
+        while (accumulator >= MAX_STEP_TIME) {
+            game.world.step(MAX_STEP_TIME, 8, 2);
+            accumulator -= MAX_STEP_TIME;
+            if (accumulator > 5 * MAX_STEP_TIME) { // Ngăn quá tải
+                accumulator = 0;
+                break;
+            }
+        }
+
+
+    }
 
     public void renderCamera(){
         Vector2 position = ECSEngine.box2DComponentMapper.get(mapMangager.ecsEngine.playerEntity).body.getPosition();
@@ -115,8 +128,4 @@ public class PlayScreen implements Screen {
     }
 
 
-    public void updateWorld()
-    {
-        game.world.step(1/60f, 6, 2);
-    }
 }

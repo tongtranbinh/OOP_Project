@@ -25,7 +25,7 @@ public class DamageAreaSystem extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
         final Box2DComponent box2DComponent = box2DComponentMapper.get(entity);
         final DamageAreaComponent damageAreaComponent = ECSEngine.damageAreaComponentMapper.get(entity);
-
+        Vector2 damageAreaPosition = box2DComponent.body.getPosition();
 
         if (damageAreaComponent.isAttack) {
             Vector2 velocity = Vector2.Zero;
@@ -44,13 +44,17 @@ public class DamageAreaSystem extends IteratingSystem {
                     break;
             }
             box2DComponent.body.setLinearVelocity(velocity);
-
         }
 
-        Vector2 damageAreaPosition = box2DComponent.body.getPosition();
+
+
+
         if( abs(damageAreaComponent.position.x - damageAreaPosition.x) > damageAreaComponent.range ||
             abs(damageAreaComponent.position.y - damageAreaPosition.y) > damageAreaComponent.range) {
-            //game.world.destroyBody(box2DComponent.body);
+            box2DComponent.body.setLinearVelocity(Vector2.Zero);
+            game.ecsEngine.EntityQueue.add(entity);
         }
+
+
     }
 }

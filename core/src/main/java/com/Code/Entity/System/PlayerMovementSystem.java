@@ -8,6 +8,7 @@ import com.Code.Others.DirectionType;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.math.Vector2;
 
 import static java.lang.Math.sqrt;
 
@@ -16,7 +17,7 @@ public class PlayerMovementSystem extends IteratingSystem {
 
     float move_x;
     float move_y;
-    DirectionType direction;
+    DirectionType direction = DirectionType.DOWN    ;
 
 
     public PlayerMovementSystem(Main game) {
@@ -45,10 +46,7 @@ public class PlayerMovementSystem extends IteratingSystem {
                 box2DComponent.body.getWorldCenter().y, true);
         }
         else{
-            box2DComponent.body.applyLinearImpulse(-box2DComponent.body.getLinearVelocity().x,
-                -box2DComponent.body.getLinearVelocity().y ,
-                box2DComponent.body.getWorldCenter().x,
-                box2DComponent.body.getWorldCenter().y, true);
+            box2DComponent.body.setLinearVelocity(new Vector2(0,0));
         }
 
         playerComponent.direction = direction;

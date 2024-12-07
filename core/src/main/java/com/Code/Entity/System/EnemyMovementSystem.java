@@ -13,6 +13,12 @@ import com.badlogic.gdx.math.Vector2;
 public class EnemyMovementSystem extends IteratingSystem {
 
     Main game;
+
+    public float Duration = 0;
+    public float limitDuration = 5f;
+    public float speed = 50 * Main.PPM;
+
+
     public EnemyMovementSystem(Main game) {
         super(Family.all(EnemyComponent.class, Box2DComponent.class).get());
         this.game = game;
@@ -24,6 +30,16 @@ public class EnemyMovementSystem extends IteratingSystem {
         final EnemyComponent enemyComponent = ECSEngine.enemyComponentMapper.get(entity);
         final Box2DComponent box2DComponent = ECSEngine.box2DComponentMapper.get(entity);
 
-        box2DComponent.body.setLinearVelocity(Vector2.Zero);
+        box2DComponent.body.setLinearVelocity(new Vector2(speed,0));
+
+        if(Duration <= limitDuration) {
+            Duration += deltaTime;
+        }
+        else {
+            Duration = 0;
+            speed = - speed;
+            box2DComponent.body.setLinearVelocity(new Vector2(speed,0));
+        }
+
     }
 }

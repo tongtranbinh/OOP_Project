@@ -1,17 +1,21 @@
 package com.Code.Box2D;
 
 import com.Code.Main;
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+
+import com.badlogic.gdx.utils.Array;
+
 
 public class WorldContactListener implements ContactListener {
 
     private boolean isPlayer;
     private boolean isCollision;
+    public Array<Listener> listeners = new Array<Listener>();
     Main game;
 
-    public WorldContactListener(Main game)
-    {
+    public WorldContactListener(Main game) {
         this.game = game;
     }
 
@@ -21,25 +25,16 @@ public class WorldContactListener implements ContactListener {
         Fixture fixtureA = contact.getFixtureA();
         Fixture fixtureB = contact.getFixtureB();
 
-        System.out.println(fixtureA.getBody().getUserData() + " hit " + fixtureB.getBody().getUserData());
+        Entity entity1 = (Entity) fixtureA.getUserData();
+        Entity entity2 = (Entity) fixtureB.getUserData();
 
-        if(fixtureA.getBody().getUserData() == "Player" || fixtureB.getBody().getUserData() == "Player"){
-            isPlayer = true;
-        }
-
-
-        if(fixtureA.getBody().getUserData() == "Collision" || fixtureB.getBody().getUserData() == "Collision"){
-            isCollision = true;
-        }
-
-
-
+        listeners.add(new Listener(entity1,  entity2 ) );
 
     }
 
     @Override
     public void endContact(Contact contact) {
-        System.out.println("End");
+
     }
 
     @Override
@@ -59,5 +54,7 @@ public class WorldContactListener implements ContactListener {
         isCollision = false;
     }
 
-
+    public Array<Listener> getListeners() {
+        return listeners;
+    }
 }

@@ -51,8 +51,8 @@ public class MapMangager {
             cShape.createLoop(collisionArea.getVertices());
             fixtureDef.shape = cShape;
             body.createFixture(fixtureDef);
-            //body.setUserData("GROUND");
             cShape.dispose();
+
         }
     }
 
