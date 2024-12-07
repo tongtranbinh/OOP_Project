@@ -49,11 +49,10 @@ public class DamageAreaSystem extends IteratingSystem {
 
 
 
-        if( abs(damageAreaComponent.position.x - damageAreaPosition.x) > damageAreaComponent.range ||
-            abs(damageAreaComponent.position.y - damageAreaPosition.y) > damageAreaComponent.range) {
+        if(damageAreaComponent.time <= 0) {
             box2DComponent.body.setLinearVelocity(Vector2.Zero);
             game.ecsEngine.EntityQueue.add(entity);
-        }
+        } else damageAreaComponent.time -= deltaTime;
 
 
     }

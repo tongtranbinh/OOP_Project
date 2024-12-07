@@ -32,6 +32,9 @@ public class Main extends Game {
     public WorldContactListener worldContactListener;
 
 
+    public static BodyDef bodyDef = new BodyDef();
+    public static FixtureDef fixtureDef = new FixtureDef();
+
     @Override
     public void create() {
         batch = new SpriteBatch();
@@ -51,8 +54,7 @@ public class Main extends Game {
     }
 
 
-    public static BodyDef bodyDef = new BodyDef();
-    public static FixtureDef fixtureDef = new FixtureDef();
+
     public static void resetBox2D(){
         bodyDef.type = BodyDef.BodyType.StaticBody;
         bodyDef.fixedRotation = false;

@@ -56,15 +56,15 @@ public class ECSEngine extends PooledEngine {
         //box2D component
         resetBox2D();
         final Box2DComponent box2DComponent = this.createComponent(Box2DComponent.class);
+        box2DComponent.ID = 1;
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(location);
         box2DComponent.body = world.createBody(bodyDef);
         PolygonShape polygonShape = new PolygonShape();
         polygonShape.setAsBox(game.BaseSize, game.BaseSize);
         fixtureDef.shape = polygonShape;
-        box2DComponent.body.createFixture(fixtureDef);
+        box2DComponent.body.createFixture(fixtureDef).setUserData(player);
         box2DComponent.isDead = false;
-        box2DComponent.body.setUserData(player);
 
         player.add(box2DComponent);
 
@@ -73,7 +73,7 @@ public class ECSEngine extends PooledEngine {
         playerComponent.direction = DOWN;
         playerComponent.speed = 150 * Main.PPM;
         playerComponent.timeAttack = 0;
-
+        playerComponent.life = 10;
         player.add(playerComponent);
 
         this.addEntity(player);
@@ -86,26 +86,26 @@ public class ECSEngine extends PooledEngine {
         //box2D component
         resetBox2D();
         Box2DComponent box2DComponent = this.createComponent(Box2DComponent.class);
+        box2DComponent.ID = 2;
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(location);
         box2DComponent.body = world.createBody(bodyDef);
         PolygonShape polygonShape = new PolygonShape();
         polygonShape.setAsBox(game.BaseSize, game.BaseSize);
         fixtureDef.shape = polygonShape;
-        box2DComponent.body.createFixture(fixtureDef);
+        box2DComponent.body.createFixture(fixtureDef).setUserData(enemy);
         box2DComponent.isDead = false;
-        box2DComponent.body.setUserData(enemy);
 
         enemy.add(box2DComponent);
 
         //enemyComponent
         EnemyComponent enemyComponent = this.createComponent(EnemyComponent.class);
-        enemyComponent.speed = 0 * Main.PPM;
+        enemyComponent.speed = 25 * Main.PPM;
 
         enemy.add(enemyComponent);
 
         this.addEntity(enemy);
-        //EntityQueue.add(enemy);
+
 
     }
 
@@ -118,7 +118,7 @@ public class ECSEngine extends PooledEngine {
         damageAreaComponent.speed = damageArea.speed;
         damageAreaComponent.direction = damageArea.direction;
         damageAreaComponent.isAttack = damageArea.isAttack;
-        damageAreaComponent.range = damageArea.range;
+        damageAreaComponent.time = damageArea.time;
         damageAreaComponent.position = damageArea.position;
 
         damageAreaEntity.add(damageAreaComponent);
@@ -126,6 +126,7 @@ public class ECSEngine extends PooledEngine {
         //box2D component
         resetBox2D();
         Box2DComponent box2DComponent = this.createComponent(Box2DComponent.class);
+        box2DComponent.ID = 3;
         bodyDef.type = BodyDef.BodyType.KinematicBody;
         bodyDef.position.set(damageArea.position);
         box2DComponent.body = world.createBody(bodyDef);
@@ -133,9 +134,9 @@ public class ECSEngine extends PooledEngine {
         polygonShape.setAsBox(damageArea.width, damageArea.height);
         fixtureDef.shape = polygonShape;
         fixtureDef.isSensor = true;
-        box2DComponent.body.createFixture(fixtureDef);
+
+        box2DComponent.body.createFixture(fixtureDef).setUserData(damageAreaEntity);
         box2DComponent.isDead = false;
-        box2DComponent.body.setUserData(damageAreaEntity);
 
         damageAreaEntity.add(box2DComponent);
 
@@ -145,28 +146,6 @@ public class ECSEngine extends PooledEngine {
 
 
 
-    @Override
-    public void update(float deltaTime){
-        super.update(deltaTime);
-        if(!world.isLocked()) {
-            for (Entity entity : EntityQueue) {
-                Box2DComponent box2DComponent = box2DComponentMapper.get(entity);
-
-                if (box2DComponent != null && box2DComponent.body != null) {
-                    System.out.println("Destroying Body: " + box2DComponent.body);
-                    world.destroyBody(box2DComponent.body);
-                } else {
-                    System.err.println("Error: Body does not exist for entity: " + entity);
-                }
-
-                this.removeEntity(entity);
-            }
-        }
-
-        EntityQueue.clear();
-
-    }
-
 
     public static void resetBox2D(){
         bodyDef.type = BodyDef.BodyType.StaticBody;
@@ -174,5 +153,16 @@ public class ECSEngine extends PooledEngine {
 
         fixtureDef.isSensor = false;
         fixtureDef.shape = null;
+    }
+
+    public void destroyBody(){
+        if(!world.isLocked()) {
+            for (Entity entity : EntityQueue) {
+
+                this.removeEntity(entity);
+            }
+        }
+
+        EntityQueue.clear();
     }
 }

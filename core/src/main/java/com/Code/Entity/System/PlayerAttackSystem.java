@@ -54,7 +54,7 @@ public class PlayerAttackSystem extends IteratingSystem {
             position.y += (playerComponent.direction == DirectionType.UP) ? game.BaseSize : 0;
 
             game.ecsEngine.createDamageArea(new DamageArea(position, playerComponent.direction,
-                game.BaseSize, game.BaseSize, damage, speed, range, true));
+                game.BaseSize, game.BaseSize, damage, speed, time, true));
 
             readyAttack1 = false;
         }
@@ -75,7 +75,7 @@ public class PlayerAttackSystem extends IteratingSystem {
             isAttack1 = true;
             damage = 10;
             speed = 100 * Main.PPM;
-            range = 300 * Main.PPM;
+            time = 4f;
         }
 
     }

@@ -17,7 +17,7 @@ public class PlayerMovementSystem extends IteratingSystem {
 
     float move_x;
     float move_y;
-    DirectionType direction = DirectionType.DOWN    ;
+    DirectionType direction = DirectionType.DOWN;
 
 
     public PlayerMovementSystem(Main game) {

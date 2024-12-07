@@ -16,11 +16,10 @@ public class CollisionSystem extends IteratingSystem {
     public CollisionSystem(Main game) {
         super(Family.all().get());
         this.game = game;
-        listeners = game.worldContactListener.getListeners();
+
     }
 
     @Override
     protected void processEntity(Entity entity, float deltaTime){
-
     }
 }
