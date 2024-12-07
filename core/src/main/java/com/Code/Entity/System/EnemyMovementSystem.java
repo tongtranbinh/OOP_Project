@@ -5,6 +5,7 @@ import com.Code.Entity.Component.EnemyComponent;
 import com.Code.Entity.Component.PlayerComponent;
 import com.Code.Entity.ECSEngine;
 import com.Code.Main;
+import com.Code.Others.DirectionType;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
@@ -13,6 +14,12 @@ import com.badlogic.gdx.math.Vector2;
 public class EnemyMovementSystem extends IteratingSystem {
 
     Main game;
+
+    public float Duration = 0;
+    public float limitDuration = 5f;
+
+
+
     public EnemyMovementSystem(Main game) {
         super(Family.all(EnemyComponent.class, Box2DComponent.class).get());
         this.game = game;
@@ -24,6 +31,29 @@ public class EnemyMovementSystem extends IteratingSystem {
         final EnemyComponent enemyComponent = ECSEngine.enemyComponentMapper.get(entity);
         final Box2DComponent box2DComponent = ECSEngine.box2DComponentMapper.get(entity);
 
-        box2DComponent.body.setLinearVelocity(Vector2.Zero);
+        box2DComponent.body.setLinearVelocity(new Vector2(0, - enemyComponent.speed));
+
+        if(Duration <= limitDuration) {
+            Duration += deltaTime;
+        }
+        else {
+            Duration = 0;
+
+            switch (enemyComponent.direction){
+                case UP:{
+                    enemyComponent.direction = DirectionType.RIGHT;
+                }
+                case DOWN:{
+
+                }
+                case LEFT:{
+
+                }
+                case RIGHT:{
+
+                }
+            }
+        }
+
     }
 }

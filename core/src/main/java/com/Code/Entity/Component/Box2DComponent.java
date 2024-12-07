@@ -6,10 +6,18 @@ import com.badlogic.gdx.utils.Pool;
 
 public class Box2DComponent implements Component , Pool.Poolable{
     public Body body;
+    public boolean isDead;
+    public int ID;
+    // ID = 0 1 2 3 4 5
+    // wall player enemy
 
+    public Box2DComponent(){
+        ID = 0;
+    }
     @Override
     public void reset() {
-
+        ID = 0;
+        isDead = false;
         if (body != null) {
             body.getWorld().destroyBody(body);
             body = null;

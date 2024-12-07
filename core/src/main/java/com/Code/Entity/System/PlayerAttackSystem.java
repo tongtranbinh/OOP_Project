@@ -5,6 +5,7 @@ import com.Code.Entity.Component.Box2DComponent;
 import com.Code.Entity.Component.PlayerComponent;
 import com.Code.Entity.ECSEngine;
 import com.Code.Main;
+import com.Code.Others.DirectionType;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
@@ -14,14 +15,12 @@ public class PlayerAttackSystem extends IteratingSystem {
 
     Main game;
     boolean isAttack1 = false;
-    boolean isAttack2 = false;
     boolean readyAttack1 = true;
-    boolean stop = false;
     float speed;
     float range;
     int damage;
     float time;
-    float timeReload = 0.5f;
+    float timeReload = 1f;
 
 
     public PlayerAttackSystem(Main game) {
@@ -46,23 +45,28 @@ public class PlayerAttackSystem extends IteratingSystem {
         }
 
 
-        if((isAttack1  || isAttack2) && readyAttack1) {
+        if(isAttack1 && readyAttack1) {
             playerComponent.stop = true;
             Vector2 position = box2DComponent.body.getPosition();
+            position.x += (playerComponent.direction == DirectionType.RIGHT) ? game.BaseSize : 0;
+            position.x -= (playerComponent.direction == DirectionType.LEFT) ? game.BaseSize : 0;
+            position.y -= (playerComponent.direction == DirectionType.DOWN) ? game.BaseSize : 0;
+            position.y += (playerComponent.direction == DirectionType.UP) ? game.BaseSize : 0;
 
             game.ecsEngine.createDamageArea(new DamageArea(position, playerComponent.direction,
-                game.BaseSize, game.BaseSize, damage, speed, range, true) );
+                game.BaseSize, game.BaseSize, damage, speed, time, true));
+
             readyAttack1 = false;
         }
 
-        if(playerComponent.stop){
+        if (playerComponent.stop) {
             time += deltaTime;
-            if(time > 0.5f){
+            if (time > 1f) {
                 playerComponent.stop = false;
                 time = 0;
             }
         }
-        isAttack1 = isAttack2 = false;
+        isAttack1 = false;
 
     }
 
@@ -70,14 +74,9 @@ public class PlayerAttackSystem extends IteratingSystem {
         if(game.keyHandler.isAttack1) {
             isAttack1 = true;
             damage = 10;
-            speed = 300 * Main.PPM;
-            range = 8 * Main.PPM;
+            speed = 100 * Main.PPM;
+            time = 4f;
         }
-        if(game.keyHandler.isAttack2) {
-            isAttack2 = true;
-            speed = 200 * Main.PPM;
-            range = 160 * Main.PPM;
-            damage = 10;
-        }
+
     }
 }

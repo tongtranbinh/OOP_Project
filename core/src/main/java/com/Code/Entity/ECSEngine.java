@@ -2,10 +2,7 @@ package com.Code.Entity;
 
 import com.Code.Effect.DamageArea;
 import com.Code.Entity.Component.*;
-import com.Code.Entity.System.DamageAreaSystem;
-import com.Code.Entity.System.EnemyMovementSystem;
-import com.Code.Entity.System.PlayerAttackSystem;
-import com.Code.Entity.System.PlayerMovementSystem;
+import com.Code.Entity.System.*;
 import com.Code.Main;
 import com.Code.Others.DirectionType;
 import com.badlogic.ashley.core.ComponentMapper;
@@ -16,8 +13,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 
-import static com.Code.Main.bodyDef;
-import static com.Code.Main.fixtureDef;
+
+import static com.Code.Main.*;
+import static com.Code.Main.MAX_STEP_TIME;
 import static com.Code.Others.DirectionType.DOWN;
 
 
@@ -37,6 +35,8 @@ public class ECSEngine extends PooledEngine {
 
     public World world;
     Main game;
+    public Array<Entity> EntityQueue = new Array<>();
+
 
     public ECSEngine(Main game){
         super();
@@ -44,10 +44,11 @@ public class ECSEngine extends PooledEngine {
         world = game.world;
 
 
+        this.addSystem(new PlayerAttackSystem(game));
         this.addSystem(new PlayerMovementSystem(game));
         this.addSystem(new EnemyMovementSystem(game));
-        this.addSystem(new PlayerAttackSystem(game));
         this.addSystem(new DamageAreaSystem(game));
+        this.addSystem(new PhysicDebugSystem(game));
     }
     public void createPlayer(Vector2 location){
         final Entity player = this.createEntity();
@@ -55,14 +56,15 @@ public class ECSEngine extends PooledEngine {
         //box2D component
         resetBox2D();
         final Box2DComponent box2DComponent = this.createComponent(Box2DComponent.class);
+        box2DComponent.ID = 1;
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(location);
         box2DComponent.body = world.createBody(bodyDef);
         PolygonShape polygonShape = new PolygonShape();
         polygonShape.setAsBox(game.BaseSize, game.BaseSize);
         fixtureDef.shape = polygonShape;
-        box2DComponent.body.createFixture(fixtureDef);
-
+        box2DComponent.body.createFixture(fixtureDef).setUserData(player);
+        box2DComponent.isDead = false;
 
         player.add(box2DComponent);
 
@@ -71,11 +73,12 @@ public class ECSEngine extends PooledEngine {
         playerComponent.direction = DOWN;
         playerComponent.speed = 150 * Main.PPM;
         playerComponent.timeAttack = 0;
-
+        playerComponent.life = 10;
         player.add(playerComponent);
 
         this.addEntity(player);
         playerEntity = player;
+
     }
 
     public void createEnemy(Vector2 location){
@@ -83,25 +86,27 @@ public class ECSEngine extends PooledEngine {
         //box2D component
         resetBox2D();
         Box2DComponent box2DComponent = this.createComponent(Box2DComponent.class);
+        box2DComponent.ID = 2;
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(location);
         box2DComponent.body = world.createBody(bodyDef);
         PolygonShape polygonShape = new PolygonShape();
         polygonShape.setAsBox(game.BaseSize, game.BaseSize);
         fixtureDef.shape = polygonShape;
-        box2DComponent.body.createFixture(fixtureDef);
+        box2DComponent.body.createFixture(fixtureDef).setUserData(enemy);
+        box2DComponent.isDead = false;
 
         enemy.add(box2DComponent);
 
         //enemyComponent
         EnemyComponent enemyComponent = this.createComponent(EnemyComponent.class);
-        enemyComponent.speed = 0 * Main.PPM;
+        enemyComponent.speed = 25 * Main.PPM;
 
         enemy.add(enemyComponent);
 
-
-
         this.addEntity(enemy);
+
+
     }
 
     public void createDamageArea(DamageArea damageArea){
@@ -113,7 +118,7 @@ public class ECSEngine extends PooledEngine {
         damageAreaComponent.speed = damageArea.speed;
         damageAreaComponent.direction = damageArea.direction;
         damageAreaComponent.isAttack = damageArea.isAttack;
-        damageAreaComponent.range = damageArea.range;
+        damageAreaComponent.time = damageArea.time;
         damageAreaComponent.position = damageArea.position;
 
         damageAreaEntity.add(damageAreaComponent);
@@ -121,19 +126,26 @@ public class ECSEngine extends PooledEngine {
         //box2D component
         resetBox2D();
         Box2DComponent box2DComponent = this.createComponent(Box2DComponent.class);
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        box2DComponent.ID = 3;
+        bodyDef.type = BodyDef.BodyType.KinematicBody;
         bodyDef.position.set(damageArea.position);
         box2DComponent.body = world.createBody(bodyDef);
         PolygonShape polygonShape = new PolygonShape();
         polygonShape.setAsBox(damageArea.width, damageArea.height);
         fixtureDef.shape = polygonShape;
         fixtureDef.isSensor = true;
-        box2DComponent.body.createFixture(fixtureDef);
+
+        box2DComponent.body.createFixture(fixtureDef).setUserData(damageAreaEntity);
+        box2DComponent.isDead = false;
 
         damageAreaEntity.add(box2DComponent);
 
         this.addEntity(damageAreaEntity);
+
     }
+
+
+
 
     public static void resetBox2D(){
         bodyDef.type = BodyDef.BodyType.StaticBody;
@@ -141,5 +153,16 @@ public class ECSEngine extends PooledEngine {
 
         fixtureDef.isSensor = false;
         fixtureDef.shape = null;
+    }
+
+    public void destroyBody(){
+        if(!world.isLocked()) {
+            for (Entity entity : EntityQueue) {
+
+                this.removeEntity(entity);
+            }
+        }
+
+        EntityQueue.clear();
     }
 }

@@ -12,6 +12,7 @@ public class DamageAreaComponent implements Component, Pool.Poolable {
     public float speed;
     public Vector2 position;
     public float range;
+    public float time;
     public DirectionType direction;
 
     @Override
