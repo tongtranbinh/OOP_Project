@@ -3,17 +3,24 @@ package com.Code.Map;
 
 import com.Code.Entity.ECSEngine;
 import com.Code.Main;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 
 import static com.Code.Main.*;
 
 public class MapMangager {
 
     public Maploader currentMap;
+    MapType currentMapType, nextMapType;
     Main game;
     World world;
     public ECSEngine ecsEngine;
+    private Array<Entity> entityToRemove;
+    private Array<Body> bodies;
+
 
 
 
@@ -22,8 +29,21 @@ public class MapMangager {
         world = game.world;
 
         ecsEngine = game.ecsEngine;
-        currentMap = new Maploader(game);
+        currentMapType = MapType.STARTING;
+        nextMapType = MapType.STARTING;
+        currentMap = new Maploader(MapType.STARTING);
+        entityToRemove = new Array<Entity>();
+        bodies = new Array<Body>();
 
+
+    }
+
+    public void setMap(){
+        //if(currentMapType == nextMapType) return;
+        //destroyMap();
+        currentMapType = nextMapType;
+        currentMap = new Maploader(currentMapType);
+        currentMap.CreateMap();
         spawnPlayer();
         spawnEnemy();
         spawnCollisionArea();
@@ -52,8 +72,36 @@ public class MapMangager {
             fixtureDef.shape = cShape;
             body.createFixture(fixtureDef);
             cShape.dispose();
+            body.setUserData("GROUND");
 
         }
+    }
+
+    public void destroyMap() {
+        // clean map entities and body
+        world.getBodies(bodies);
+        destroyCollisionArea();
+        destroyObjects();
+    }
+
+    private void destroyCollisionArea() {
+        for (final Body body: bodies) {
+            if ("GROUND".equals(body.getUserData())) {
+                world.destroyBody(body);
+            }
+        }
+    }
+
+    private void destroyObjects() {
+        for(final Entity entity: ecsEngine.getEntities()) {
+            if (ECSEngine.playerComponentMapper.get(entity) == null) {
+                entityToRemove.add(entity);
+            }
+        }
+        for (final Entity entity: entityToRemove) {
+            ecsEngine.removeEntity(entity);
+        }
+        entityToRemove.clear();
     }
 
 }

@@ -1,6 +1,8 @@
 package com.Code.Map;
 
+import com.Code.Entity.ECSEngine;
 import com.Code.Main;
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
@@ -12,6 +14,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 
@@ -23,33 +26,31 @@ public class Maploader {
     public TmxMapLoader tmxMapLoader;
     public TiledMap tiledMap;
     MapType currentMapType;
-    Main game;
+
 
 
     public Vector2 PlayerStartingPosition = new Vector2();
     public Array<CollisionArea> collisionAreas = new Array<CollisionArea>();
     public Array<Vector2> enemyPosition = new Array<Vector2>();
 
-    public Maploader(Main game)
+    public Maploader(MapType mapType)
     {
-        currentMapType = MapType.STARTING;
-        this.game = game;
+        currentMapType = mapType;
         tmxMapLoader = new TmxMapLoader();
-
-
-        CreateMap();
-        getPlayerObject();
-        getEnemyObject();
-        getCollisionObject();
     }
     public void CreateMap(){
         tiledMap = tmxMapLoader.load(currentMapType.getFilepath());
+        getPlayerObject();
+        getEnemyObject();
+        getCollisionObject();
     }
 
 
     public void getPlayerObject(){
 
         MapLayer mapLayer = tiledMap.getLayers().get("Player");
+        if(mapLayer == null) return;
+
         MapObjects gameObjects = mapLayer.getObjects();
 
         for(MapObject object : gameObjects){
@@ -64,6 +65,7 @@ public class Maploader {
     public void getCollisionObject(){
 
         MapLayer mapLayer = tiledMap.getLayers().get("Collision");
+        if(mapLayer == null) return;
         MapObjects gameObjects = mapLayer.getObjects();
 
 
@@ -102,6 +104,8 @@ public class Maploader {
 
     public void getEnemyObject(){
         MapLayer mapLayer = tiledMap.getLayers().get("Enemy");
+        if(mapLayer == null) return;
+
         MapObjects gameObjects = mapLayer.getObjects();
 
         for(MapObject object : gameObjects){
@@ -112,6 +116,8 @@ public class Maploader {
             }
         }
     }
+
+
 
     public Vector2 getPlayerStartingPosition(){return PlayerStartingPosition;}
 
