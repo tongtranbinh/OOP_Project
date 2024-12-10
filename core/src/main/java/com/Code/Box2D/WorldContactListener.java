@@ -1,6 +1,7 @@
 package com.Code.Box2D;
 
 import com.Code.Entity.Component.Box2DComponent;
+import com.Code.Entity.Component.DamageAreaComponent;
 import com.Code.Entity.Component.EnemyComponent;
 import com.Code.Entity.Component.PlayerComponent;
 import com.Code.Entity.ECSEngine;
@@ -42,35 +43,58 @@ public class WorldContactListener implements ContactListener {
         if(entity1 != null) box1 = ECSEngine.box2DComponentMapper.get(entity1);
         if(entity2 != null) box2 = ECSEngine.box2DComponentMapper.get(entity2);
         switch (box1.ID) {
-        case 0: {
-            hasGround = true;
-            break;
+            case 0: {
+                hasGround = true;
+                break;
+            }
+            case 1: {
+                hasPlayer = true;
+                break;
+            }
+            case 2: {
+                hasEnemy = true;
+                break;
+            }
+            case 3:{
+                hasDamageArea = true;
+                break;
+            }
         }
-        case 1: {
-            hasPlayer = true;
-            break;
-        }
-        case 2: {
-            hasEnemy = true;
-            break;
-        }
-    }
-    switch (box2.ID) {
-        case 0: {
-            hasGround = true;
-            break;
-        }
-        case 1: {
-            hasPlayer = true;
-            break;
-        }
-        case 2: {
-            hasEnemy = true;
-            break;
-        }
-    }
+        switch (box2.ID) {
+            case 0: {
+                hasGround = true;
+                break;
+            }
+            case 1: {
+                hasPlayer = true;
+                break;
+            }
+            case 2: {
+                hasEnemy = true;
+                break;
+            }
 
-        if(hasPlayer && hasEnemy) playerVSenemy(entity1, entity2);
+            case 3:{
+                hasDamageArea = true;
+                break;
+            }
+        }
+        if(hasPlayer && hasEnemy) {
+            Entity playerEntity;
+            Entity enemyEntity;
+            if(box1.ID == 1) { playerEntity = entity1; enemyEntity = entity2; }
+                else { playerEntity = entity2; enemyEntity = entity1; }
+
+            playerVSenemy(playerEntity, enemyEntity);
+        }
+        if(hasDamageArea && hasEnemy) {
+            Entity damageAreaEntity;
+            Entity enemyEntity;
+            if(box1.ID == 3) { damageAreaEntity = entity1; enemyEntity = entity2; }
+            else { damageAreaEntity = entity2; enemyEntity = entity1; }
+
+            damageAreaVSenemy(damageAreaEntity, enemyEntity);
+        }
 
     }
 
@@ -101,6 +125,14 @@ public class WorldContactListener implements ContactListener {
 
     public void damageAreaVSenemy(Entity damageArea, Entity enemy){
 
+        EnemyComponent enemyComponent = ECSEngine.enemyComponentMapper.get(enemy);
+        DamageAreaComponent damageAreaComponent = ECSEngine.damageAreaComponentMapper.get(damageArea);
+        System.out.println("ban trung " +enemy);
+        game.ecsEngine.EntityQueue.add(damageArea);
+         enemyComponent.life -= 1;
+        if(enemyComponent.life == 0) {
+            game.ecsEngine.EntityQueue.add(enemy);
+        }
     }
 
     void reset() {

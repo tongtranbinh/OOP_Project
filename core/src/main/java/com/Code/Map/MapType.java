@@ -1,8 +1,8 @@
 package com.Code.Map;
 
 public enum MapType {
-    STARTING ("laboratory/Starting.tmx");
-
+    STARTING ("laboratory/Starting.tmx"),
+    BOSSMAP ("laboratory/BossMap.tmx");
 
     private final String filepath;
 
