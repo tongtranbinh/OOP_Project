@@ -74,6 +74,7 @@ public class ECSEngine extends PooledEngine {
         playerComponent.speed = 150 * Main.PPM;
         playerComponent.timeAttack = 0;
         playerComponent.life = 10;
+        playerComponent.startPosition = location;
         player.add(playerComponent);
 
         this.addEntity(player);
@@ -95,13 +96,13 @@ public class ECSEngine extends PooledEngine {
         fixtureDef.shape = polygonShape;
         box2DComponent.body.createFixture(fixtureDef).setUserData(enemy);
         box2DComponent.isDead = false;
-
         enemy.add(box2DComponent);
 
         //enemyComponent
         EnemyComponent enemyComponent = this.createComponent(EnemyComponent.class);
         enemyComponent.speed = 25 * Main.PPM;
-
+        enemyComponent.life = 3;
+        enemyComponent.startPosition = location;
         enemy.add(enemyComponent);
 
         this.addEntity(enemy);
@@ -158,7 +159,7 @@ public class ECSEngine extends PooledEngine {
     public void destroyBody(){
         if(!world.isLocked()) {
             for (Entity entity : EntityQueue) {
-
+                System.out.println("xoa  " + entity);
                 this.removeEntity(entity);
             }
         }
