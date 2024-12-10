@@ -32,9 +32,12 @@ public class MapMangager {
         currentMapType = MapType.STARTING;
         nextMapType = MapType.STARTING;
         currentMap = new Maploader(MapType.STARTING);
+        currentMap.CreateMap();
         entityToRemove = new Array<Entity>();
         bodies = new Array<Body>();
-
+        spawnPlayer();
+        spawnEnemy();
+        spawnCollisionArea();
 
     }
 
@@ -44,9 +47,7 @@ public class MapMangager {
         currentMapType = nextMapType;
         currentMap = new Maploader(currentMapType);
         currentMap.CreateMap();
-        spawnPlayer();
-        spawnEnemy();
-        spawnCollisionArea();
+
     }
 
     public void spawnPlayer(){

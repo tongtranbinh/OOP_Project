@@ -43,7 +43,7 @@ public class PlayScreen implements Screen {
         viewport = new FitViewport(game.ScreenWidth * Main.PPM, game.ScreenHeight * Main.PPM, Camera);
         //Map load
         mapMangager = game.mapMangager;
-        mapMangager.setMap();
+        //mapMangager.setMap();
         mapRenderer = new OrthogonalTiledMapRenderer(mapMangager.currentMap.tiledMap, 1 * Main.PPM);
 
     }
