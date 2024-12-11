@@ -10,15 +10,13 @@ public class Box2DComponent implements Component , Pool.Poolable{
     public boolean isDead;
     public int ID;
     // ID = 0 1 2 3 4 5
-    // wall player enemy damagearea
+    // wall player enemy damagearea boss
 
     public Box2DComponent(){
         ID = 0;
     }
     @Override
     public void reset() {
-        Vector2 dir = new Vector2(1,1);
-        dir.nor();
         ID = 0;
         isDead = false;
         if (body != null) {

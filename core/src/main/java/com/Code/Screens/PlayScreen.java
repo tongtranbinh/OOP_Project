@@ -43,7 +43,6 @@ public class PlayScreen implements Screen {
         viewport = new FitViewport(game.ScreenWidth * Main.PPM, game.ScreenHeight * Main.PPM, Camera);
         //Map load
         mapMangager = game.mapMangager;
-        //mapMangager.setMap();
         mapRenderer = new OrthogonalTiledMapRenderer(mapMangager.currentMap.tiledMap, 1 * Main.PPM);
 
     }
@@ -60,7 +59,7 @@ public class PlayScreen implements Screen {
 
 
         updateWorld(delta);
-        game.ecsEngine.update(delta);
+
 
 
 
@@ -69,8 +68,9 @@ public class PlayScreen implements Screen {
         mapRenderer.setView(Camera);
         mapRenderer.render();
         game.batch.setProjectionMatrix(Camera.combined);
-
         box2DDebugRenderer.render(game.world,Camera.combined);
+
+        game.ecsEngine.update(delta);
         game.ecsEngine.destroyBody();
         game.batch.begin();
         game.batch.end();

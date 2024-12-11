@@ -45,11 +45,11 @@ public class Main extends Game {
 
         ecsEngine = new ECSEngine(this);
         mapMangager = new MapMangager(this);
-
+        mapMangager.setMap();
         worldContactListener = new WorldContactListener(this);
         world.setContactListener(worldContactListener);
-
         setScreen(new PlayScreen(this));
+
         Gdx.input.setInputProcessor(keyHandler);
     }
 
