@@ -5,7 +5,7 @@ import com.Code.Controller.KeyHandler;
 import com.Code.Entity.ECSEngine;
 import com.Code.Map.MapMangager;
 import com.Code.Screens.PlayScreen;
-import com.Code.Screens.LoadingScreen;
+import com.Code.Screens.MenuScreen;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -25,7 +25,7 @@ public class Main extends Game {
     public static final float MAX_STEP_TIME = 1/60f;
 
     public float BaseSize = 16 * PPM;
-    public int ScreenWidth = 800, ScreenHeight = 450;
+    public int ScreenWidth = 1600, ScreenHeight = 900;
     public SpriteBatch batch;
     public World world;
 
@@ -56,7 +56,7 @@ public class Main extends Game {
         worldContactListener = new WorldContactListener(this);
         world.setContactListener(worldContactListener);
 
-        setScreen(new LoadingScreen(this)); // Chuyển tới màn hình loading khi game bắt đầu
+        setScreen(new MenuScreen(this)); // Chuyển tới màn hình loading khi game bắt đầu
         Gdx.input.setInputProcessor(keyHandler);
     }
 

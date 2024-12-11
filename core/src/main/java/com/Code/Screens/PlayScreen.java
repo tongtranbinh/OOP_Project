@@ -1,5 +1,6 @@
 package com.Code.Screens;
 
+import com.Code.Box2D.WorldContactListener;
 import com.Code.Entity.ECSEngine;
 import com.Code.Main;
 import com.Code.Map.MapMangager;
@@ -43,8 +44,8 @@ public class PlayScreen implements Screen {
         mapRenderer = new OrthogonalTiledMapRenderer(mapMangager.currentMap.tiledMap, 1 * Main.PPM);
 
 
-        //mapMangager.spawnPlayer();
-        //game.world.setContactListener(new WorldContactListener(game));
+        mapMangager.spawnPlayer();
+        game.world.setContactListener(new WorldContactListener(game));
 
 
 
@@ -53,7 +54,7 @@ public class PlayScreen implements Screen {
 
     @Override
     public void show() {
-
+        Gdx.input.setInputProcessor(game.keyHandler);
     }
 
     @Override
