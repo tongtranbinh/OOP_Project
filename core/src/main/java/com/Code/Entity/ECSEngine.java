@@ -75,6 +75,7 @@ public class ECSEngine extends PooledEngine {
         playerComponent.speed = 150 * Main.PPM;
         playerComponent.timeAttack = 0;
         playerComponent.life = 10;
+        playerComponent.maxLife = 10;   // Giá trị tối đa của máu
         playerComponent.startPosition = location;
         player.add(playerComponent);
 
@@ -195,4 +196,8 @@ public class ECSEngine extends PooledEngine {
 
         EntityQueue.clear();
     }
+    public Main getGame() {
+        return game;
+    }
+
 }
