@@ -23,11 +23,7 @@ public class PlayScreen implements Screen {
     //map
     OrthogonalTiledMapRenderer mapRenderer;
     MapMangager mapMangager;
-
-
     Box2DDebugRenderer box2DDebugRenderer = new Box2DDebugRenderer();
-
-
 
 
     public PlayScreen(Main game){
@@ -40,14 +36,8 @@ public class PlayScreen implements Screen {
         viewport = new FitViewport(game.ScreenWidth * Main.PPM, game.ScreenHeight * Main.PPM, Camera);
         //Map load
         mapMangager = game.mapMangager;
-
         mapRenderer = new OrthogonalTiledMapRenderer(mapMangager.currentMap.tiledMap, 1 * Main.PPM);
-
-
-        mapMangager.spawnPlayer();
         game.world.setContactListener(new WorldContactListener(game));
-
-
 
 
     }
@@ -68,25 +58,18 @@ public class PlayScreen implements Screen {
         Gdx.gl.glClearColor(0,0,0,1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        updateWorld(delta);
 
 
         updateWorld();
-        mapMangager.ecsEngine.update(1/60f);
 
         renderCamera();
 
         game.batch.setProjectionMatrix(Camera.combined);
-
-        box2DDebugRenderer.render(game.world,Camera.combined);
-
-        game.ecsEngine.update(delta);
-        game.ecsEngine.destroyBody();
-
-
         mapRenderer.render();
 
         box2DDebugRenderer.render(game.world,Camera.combined);
+        game.ecsEngine.update(1/60f);
+        game.ecsEngine.destroyBody();
 
         game.batch.begin();
         game.batch.end();
