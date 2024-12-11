@@ -57,8 +57,6 @@ public class Main extends Game {
         world.setContactListener(worldContactListener);
 
         setScreen(new MenuScreen(this)); // Chuyển tới màn hình loading khi game bắt đầu
-        setScreen(new LoadingScreen(this)); // Chuyển tới màn hình loading khi game bắt đầu
-
         Gdx.input.setInputProcessor(keyHandler);
     }
 
