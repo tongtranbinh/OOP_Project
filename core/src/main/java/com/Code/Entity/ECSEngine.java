@@ -31,6 +31,7 @@ public class ECSEngine extends PooledEngine {
     public static final ComponentMapper<EnemyComponent> enemyComponentMapper = ComponentMapper.getFor(EnemyComponent.class);
     public static final ComponentMapper<DamageAreaComponent> damageAreaComponentMapper = ComponentMapper.getFor(DamageAreaComponent.class);
     public static final ComponentMapper<EntityComponent> entityComponentMapper = ComponentMapper.getFor(EntityComponent.class);
+    public static final ComponentMapper<BossComponent> bossComponentMapper = ComponentMapper.getFor(BossComponent.class);
 
 
     public World world;
@@ -142,6 +143,34 @@ public class ECSEngine extends PooledEngine {
         damageAreaEntity.add(box2DComponent);
 
         this.addEntity(damageAreaEntity);
+
+    }
+
+    public void CreateBoss(Vector2 location){
+        final Entity boss = this.createEntity();
+        //box2D component
+        resetBox2D();
+        Box2DComponent box2DComponent = this.createComponent(Box2DComponent.class);
+        box2DComponent.ID = 4;
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(location);
+        box2DComponent.body = world.createBody(bodyDef);
+        PolygonShape polygonShape = new PolygonShape();
+        polygonShape.setAsBox(game.BaseSize * 2, game.BaseSize * 2);
+        fixtureDef.shape = polygonShape;
+        box2DComponent.body.createFixture(fixtureDef).setUserData(boss);
+        box2DComponent.isDead = false;
+        boss.add(box2DComponent);
+
+        //enemyComponent
+        BossComponent bossComponent = this.createComponent(BossComponent.class);
+        bossComponent.speed = 25 * Main.PPM;
+        bossComponent.life = 10;
+        bossComponent.startPosition = location;
+        boss.add(bossComponent);
+
+
+        this.addEntity(boss);
 
     }
 

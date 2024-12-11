@@ -32,6 +32,7 @@ public class Maploader {
     public Vector2 PlayerStartingPosition = new Vector2();
     public Array<CollisionArea> collisionAreas = new Array<CollisionArea>();
     public Array<Vector2> enemyPosition = new Array<Vector2>();
+    public Array<Vector2> bossPosition = new Array<Vector2>();
 
     public Maploader(MapType mapType)
     {
@@ -43,6 +44,7 @@ public class Maploader {
         getPlayerObject();
         getEnemyObject();
         getCollisionObject();
+        getBossObject();
     }
 
 
@@ -117,6 +119,22 @@ public class Maploader {
         }
     }
 
+    public void getBossObject(){
+
+        MapLayer mapLayer = tiledMap.getLayers().get("Boss");
+        if(mapLayer == null) return;
+
+        MapObjects gameObjects = mapLayer.getObjects();
+
+        for(MapObject object : gameObjects){
+            if (object instanceof RectangleMapObject) {
+                final RectangleMapObject rectangleMapObject = (RectangleMapObject) object;
+                Rectangle rectangle = rectangleMapObject.getRectangle();
+                bossPosition.add(new Vector2(rectangle.x * Main.PPM, rectangle.y * Main.PPM));
+            }
+        }
+    }
+
 
 
     public Vector2 getPlayerStartingPosition(){return PlayerStartingPosition;}
@@ -124,6 +142,9 @@ public class Maploader {
     public Array<CollisionArea> getCollisionAreas(){return collisionAreas;}
 
     public Array<Vector2> getEnemyPosition(){return enemyPosition;}
+
+    public Array<Vector2> getBossPosition(){return bossPosition;}
+
 
 
 }

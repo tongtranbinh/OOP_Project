@@ -31,22 +31,23 @@ public class MapMangager {
         ecsEngine = game.ecsEngine;
         currentMapType = MapType.STARTING;
         nextMapType = MapType.STARTING;
-        currentMap = new Maploader(MapType.STARTING);
-        currentMap.CreateMap();
         entityToRemove = new Array<Entity>();
         bodies = new Array<Body>();
-        spawnPlayer();
-        spawnEnemy();
-        spawnCollisionArea();
 
     }
 
     public void setMap(){
-        //if(currentMapType == nextMapType) return;
-        //destroyMap();
+        if(currentMapType == nextMapType && currentMap != null) return;
+        destroyMap();
         currentMapType = nextMapType;
         currentMap = new Maploader(currentMapType);
         currentMap.CreateMap();
+
+
+        spawnPlayer();
+        spawnEnemy();
+        spawnBoss();
+        spawnCollisionArea();
 
     }
 
@@ -57,6 +58,12 @@ public class MapMangager {
     public void spawnEnemy(){
         for(Vector2 location : currentMap.getEnemyPosition()) {
             ecsEngine.createEnemy(location);
+        }
+    }
+
+    public void spawnBoss(){
+        for(Vector2 location : currentMap.getBossPosition()) {
+            ecsEngine.CreateBoss(location);
         }
     }
 

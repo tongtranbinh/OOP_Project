@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="96" height="74" tilewidth="16" tileheight="16" infinite="0" nextlayerid="12" nextobjectid="53">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="96" height="74" tilewidth="16" tileheight="16" infinite="0" nextlayerid="13" nextobjectid="57">
  <tileset firstgid="1" source="tilesFloor.tsx"/>
  <tileset firstgid="199" source="tilesWalls.tsx"/>
  <tileset firstgid="391" source="tilesStuff.tsx"/>
@@ -498,6 +498,11 @@
   <object id="44" x="1103.5" y="611" width="93.5" height="24.5"/>
   <object id="45" x="1178.5" y="641" width="20.5" height="93.5"/>
   <object id="46" x="980.5" y="688.5" width="11" height="62"/>
+ </objectgroup>
+ <objectgroup id="12" name="Boss">
+  <object id="55" name="Boss" x="1065.5" y="668">
+   <point/>
+  </object>
  </objectgroup>
  <objectgroup id="11" name="Enemy">
   <object id="50" name="Enemy" x="605.5" y="559.5">

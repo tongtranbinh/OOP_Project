@@ -52,11 +52,12 @@ public class Main extends Game {
 
         ecsEngine = new ECSEngine(this);
         mapMangager = new MapMangager(this);
-
+        mapMangager.setMap();
         worldContactListener = new WorldContactListener(this);
         world.setContactListener(worldContactListener);
 
         setScreen(new LoadingScreen(this)); // Chuyển tới màn hình loading khi game bắt đầu
+
         Gdx.input.setInputProcessor(keyHandler);
     }
 

@@ -17,16 +17,16 @@ public class PlayerAttackSystem extends IteratingSystem {
     boolean isAttack1 = false;
     boolean readyAttack1 = true;
     float speed;
-    float range;
     int damage;
     float time;
     float timeReload = 1f;
+    float timeStop;
 
 
     public PlayerAttackSystem(Main game) {
         super(Family.all(PlayerComponent.class, Box2DComponent.class).get());
         this.game = game;
-        time = 0;
+        timeStop = 0;
     }
 
     @Override
@@ -46,6 +46,7 @@ public class PlayerAttackSystem extends IteratingSystem {
 
 
         if(isAttack1 && readyAttack1) {
+
             playerComponent.stop = true;
             Vector2 position = box2DComponent.body.getPosition();
             position.x += (playerComponent.direction == DirectionType.RIGHT) ? game.BaseSize : 0;
@@ -60,10 +61,10 @@ public class PlayerAttackSystem extends IteratingSystem {
         }
 
         if (playerComponent.stop) {
-            time += deltaTime;
-            if (time > 1f) {
+            timeStop += deltaTime;
+            if (timeStop > 0.6f) {
                 playerComponent.stop = false;
-                time = 0;
+                timeStop = 0;
             }
         }
         isAttack1 = false;
