@@ -68,7 +68,7 @@ public class PlayScreen implements Screen {
         Gdx.gl.glClearColor(0,0,0,1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-
+        updateWorld(delta);
 
 
         updateWorld();
@@ -78,9 +78,16 @@ public class PlayScreen implements Screen {
 
         game.batch.setProjectionMatrix(Camera.combined);
 
+        box2DDebugRenderer.render(game.world,Camera.combined);
+
+        game.ecsEngine.update(delta);
+        game.ecsEngine.destroyBody();
+
+
         mapRenderer.render();
 
         box2DDebugRenderer.render(game.world,Camera.combined);
+
         game.batch.begin();
         game.batch.end();
     }
