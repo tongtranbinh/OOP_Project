@@ -59,6 +59,12 @@ public class PlayScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        // Kiểm tra nếu bấm phím P
+        if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.P)) {
+            game.setScreen(new PauseScreen(game)); // Chuyển sang PauseScreen
+            return; // Dừng render PlayScreen khi pause
+        }
+
         Gdx.gl.glClearColor(0,0,0,1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
