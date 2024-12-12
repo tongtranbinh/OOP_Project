@@ -124,6 +124,7 @@ public class ECSEngine extends PooledEngine {
         damageAreaComponent.isAttack = damageArea.isAttack;
         damageAreaComponent.time = damageArea.time;
         damageAreaComponent.position = damageArea.position;
+        damageAreaComponent.owner = damageArea.owner;
 
         damageAreaEntity.add(damageAreaComponent);
 

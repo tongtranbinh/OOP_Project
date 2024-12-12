@@ -71,8 +71,6 @@ public class PlayScreen implements Screen {
         game.ecsEngine.update(1/60f);
         game.ecsEngine.destroyBody();
 
-        game.batch.begin();
-        game.batch.end();
     }
 
     @Override
