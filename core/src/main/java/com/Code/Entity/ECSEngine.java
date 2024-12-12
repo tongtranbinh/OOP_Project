@@ -50,6 +50,8 @@ public class ECSEngine extends PooledEngine {
         this.addSystem(new EnemyMovementSystem(game));
         this.addSystem(new DamageAreaSystem(game));
         this.addSystem(new PhysicDebugSystem(game));
+        this.addSystem(new BossMovementSystem(game));
+        this.addSystem(new BossAttackSystem(game));
     }
     public void createPlayer(Vector2 location){
         final Entity player = this.createEntity();
@@ -167,6 +169,16 @@ public class ECSEngine extends PooledEngine {
         bossComponent.speed = 25 * Main.PPM;
         bossComponent.life = 10;
         bossComponent.startPosition = location;
+        bossComponent.readytoAttack = false;
+        bossComponent.reloadtime = 0;
+        bossComponent.Skill1 = true;
+        bossComponent.Skill2 = false;
+        bossComponent.cntSkill1 = 0;
+        bossComponent.timeCntSkill1 = 0;
+        bossComponent.timeSkill1 = 0;
+        bossComponent.timeSkill2 = 0;
+        bossComponent.stop = false;
+        bossComponent.direction = DOWN;
         boss.add(bossComponent);
 
 
@@ -188,7 +200,6 @@ public class ECSEngine extends PooledEngine {
     public void destroyBody(){
         if(!world.isLocked()) {
             for (Entity entity : EntityQueue) {
-                System.out.println("xoa  " + entity);
                 this.removeEntity(entity);
             }
         }

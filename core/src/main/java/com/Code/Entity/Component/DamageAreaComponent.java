@@ -13,11 +13,11 @@ public class DamageAreaComponent implements Component, Pool.Poolable {
     public Vector2 position;
     public float range;
     public float time;
-    public DirectionType direction;
+    public Vector2 direction;
 
     @Override
     public void reset() {
-        direction = DirectionType.DOWN;
+        direction =new Vector2 (0, -1);
         isAttack = false;
     }
 }
