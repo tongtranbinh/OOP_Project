@@ -1,17 +1,13 @@
 package com.Code.Screens;
 
-import com.Code.Box2D.WorldContactListener;
-import com.Code.Entity.ECSEngine;
+import com.Code.Scenes.Hud;
 import com.Code.Main;
-import com.Code.Map.MapMangager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -20,26 +16,23 @@ public class PlayScreen implements Screen {
     Main game;
     OrthographicCamera Camera;
     Viewport viewport;
-    //map
     OrthogonalTiledMapRenderer mapRenderer;
-    MapMangager mapMangager;
+
     Box2DDebugRenderer box2DDebugRenderer = new Box2DDebugRenderer();
 
+    private Hud hud; // Thêm HUD
 
-    public PlayScreen(Main game){
+    public PlayScreen(Main game) {
         this.game = game;
-
-        //Create world
-
 
         Camera = new OrthographicCamera();
         viewport = new FitViewport(game.ScreenWidth * Main.PPM, game.ScreenHeight * Main.PPM, Camera);
-        //Map load
-        mapMangager = game.mapMangager;
-        mapRenderer = new OrthogonalTiledMapRenderer(mapMangager.currentMap.tiledMap, 1 * Main.PPM);
-        game.world.setContactListener(new WorldContactListener(game));
 
+        // Map load
+        mapRenderer = new OrthogonalTiledMapRenderer(game.mapMangager.currentMap.tiledMap, 1 * Main.PPM);
 
+        // Tạo HUD
+        hud = new Hud(game.ecsEngine);
     }
 
     @Override
@@ -51,31 +44,38 @@ public class PlayScreen implements Screen {
     public void render(float delta) {
         // Kiểm tra nếu bấm phím P
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.P)) {
-            game.setScreen(new PauseScreen(game)); // Chuyển sang PauseScreen
-            return; // Dừng render PlayScreen khi pause
+            game.setScreen(new PauseScreen(game));
+            return;
         }
 
-        Gdx.gl.glClearColor(0,0,0,1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-
 
         updateWorld();
 
         renderCamera();
 
-        game.batch.setProjectionMatrix(Camera.combined);
         mapRenderer.render();
 
-        box2DDebugRenderer.render(game.world,Camera.combined);
-        game.ecsEngine.update(1/60f);
+        game.batch.setProjectionMatrix(Camera.combined);
+
+        box2DDebugRenderer.render(game.world, Camera.combined);
+
+        game.ecsEngine.update(1 / 60f);
         game.ecsEngine.destroyBody();
 
+        // Vẽ HUD
+        hud.render(game.batch, game.ScreenWidth, game.ScreenHeight);
+
+        game.batch.begin();
+        game.batch.end();
     }
+
+
 
     @Override
     public void resize(int width, int height) {
-        viewport.update(width,height);
+        viewport.update(width, height);
     }
 
     @Override
@@ -95,9 +95,9 @@ public class PlayScreen implements Screen {
 
     @Override
     public void dispose() {
-
         game.world.dispose();
         box2DDebugRenderer.dispose();
+        hud.dispose(); // Hủy HUD
     }
 
 
@@ -110,9 +110,7 @@ public class PlayScreen implements Screen {
         Camera.update();
     }
 
-
-    public void updateWorld()
-    {
-        game.world.step(1/60f, 6, 2);
+    public void updateWorld() {
+        game.world.step(1 / 60f, 6, 2);
     }
 }
