@@ -2,6 +2,7 @@ package com.Code.Screens;
 
 import com.Code.Box2D.WorldContactListener;
 import com.Code.Entity.ECSEngine;
+import com.Code.Entity.System.RenderingSystem;
 import com.Code.Main;
 import com.Code.Map.MapMangager;
 import com.badlogic.gdx.Gdx;
@@ -25,7 +26,7 @@ public class PlayScreen implements Screen {
     MapMangager mapMangager;
     Box2DDebugRenderer box2DDebugRenderer = new Box2DDebugRenderer();
 
-
+    RenderingSystem renderingSystem;
     public PlayScreen(Main game){
         this.game = game;
 
@@ -38,7 +39,7 @@ public class PlayScreen implements Screen {
         mapMangager = game.mapMangager;
         mapRenderer = new OrthogonalTiledMapRenderer(mapMangager.currentMap.tiledMap, 1 * Main.PPM);
         game.world.setContactListener(new WorldContactListener(game));
-
+        renderingSystem = new RenderingSystem(game);
 
     }
 
@@ -70,7 +71,7 @@ public class PlayScreen implements Screen {
         box2DDebugRenderer.render(game.world,Camera.combined);
         game.ecsEngine.update(1/60f);
         game.ecsEngine.destroyBody();
-
+        renderingSystem.render(delta);
     }
 
     @Override

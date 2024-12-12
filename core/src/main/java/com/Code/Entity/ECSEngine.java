@@ -37,7 +37,7 @@ public class ECSEngine extends PooledEngine {
     public World world;
     Main game;
     public Array<Entity> EntityQueue = new Array<>();
-
+    public Array<Entity> PlayerEntityArray = new Array<Entity>();
 
     public ECSEngine(Main game){
         super();
@@ -80,6 +80,7 @@ public class ECSEngine extends PooledEngine {
         playerComponent.startPosition = location;
         player.add(playerComponent);
 
+        PlayerEntityArray.add(player);
         this.addEntity(player);
         playerEntity = player;
 
