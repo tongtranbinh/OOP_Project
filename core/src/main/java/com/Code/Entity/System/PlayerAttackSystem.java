@@ -19,9 +19,9 @@ public class PlayerAttackSystem extends IteratingSystem {
     float speed;
     int damage;
     float time;
-    float timeReload = 1f;
+    float timeReload = 2f;
     float timeStop;
-
+    Vector2 direction = new Vector2(0,0);
 
     public PlayerAttackSystem(Main game) {
         super(Family.all(PlayerComponent.class, Box2DComponent.class).get());
@@ -49,13 +49,18 @@ public class PlayerAttackSystem extends IteratingSystem {
 
             playerComponent.stop = true;
             Vector2 position = box2DComponent.body.getPosition();
+            direction = new Vector2(0,0);
             position.x += (playerComponent.direction == DirectionType.RIGHT) ? game.BaseSize : 0;
             position.x -= (playerComponent.direction == DirectionType.LEFT) ? game.BaseSize : 0;
             position.y -= (playerComponent.direction == DirectionType.DOWN) ? game.BaseSize : 0;
             position.y += (playerComponent.direction == DirectionType.UP) ? game.BaseSize : 0;
 
-            game.ecsEngine.createDamageArea(new DamageArea(position, playerComponent.direction,
-                game.BaseSize, game.BaseSize, damage, speed, time, true));
+            direction.x += (playerComponent.direction == DirectionType.RIGHT) ? 1 : 0;
+            direction.x -= (playerComponent.direction == DirectionType.LEFT) ? 1 : 0;
+            direction.y -= (playerComponent.direction == DirectionType.DOWN) ? 1 : 0;
+            direction.y += (playerComponent.direction == DirectionType.UP) ? 1 : 0;
+            game.ecsEngine.createDamageArea(new DamageArea(position, direction,
+                game.BaseSize, game.BaseSize, damage, speed, time, 1, true));
 
             readyAttack1 = false;
         }
@@ -75,7 +80,7 @@ public class PlayerAttackSystem extends IteratingSystem {
         if(game.keyHandler.isAttack1) {
             isAttack1 = true;
             damage = 10;
-            speed = 100 * Main.PPM;
+            speed = 200 * Main.PPM;
             time = 4f;
         }
 

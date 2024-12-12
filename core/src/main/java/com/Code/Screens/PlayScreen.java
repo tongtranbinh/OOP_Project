@@ -100,11 +100,11 @@ public class PlayScreen implements Screen {
         hud.dispose(); // Hủy HUD
     }
 
-    public void renderCamera() {
-        Camera.position.set(
-            game.mapMangager.ecsEngine.box2DComponentMapper.get(game.mapMangager.ecsEngine.playerEntity).body.getPosition(),
-            0
-        );
+
+    public void renderCamera(){
+        Camera.zoom = 0.5f;
+        Vector2 position = ECSEngine.box2DComponentMapper.get(mapMangager.ecsEngine.playerEntity).body.getPosition();
+        Camera.position.set(position,0);
 
         mapRenderer.setView(Camera);
         Camera.update();

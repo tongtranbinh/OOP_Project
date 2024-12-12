@@ -48,7 +48,7 @@ public class EnemyMovementSystem extends IteratingSystem {
         float distance = playerPos.dst(enemyPos);
 
         final Vector2 speed = new Vector2(enemyComponent.speed * 0.3f, enemyComponent.speed * 0.3f);
-        if (enemyComponent.stop == false) {
+        if (!enemyComponent.stop) {
 
             if ( distance < 100 * Main.PPM ) {
                 enemyComponent.focus = true;

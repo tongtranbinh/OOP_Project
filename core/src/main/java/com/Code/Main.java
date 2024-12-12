@@ -76,4 +76,8 @@ public class Main extends Game {
         fixtureDef.isSensor = false;
         fixtureDef.shape = null;
     }
+
+    public ECSEngine getEcsEngine(){
+        return  ecsEngine;
+    }
 }

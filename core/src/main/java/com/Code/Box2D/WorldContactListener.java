@@ -116,7 +116,6 @@ public class WorldContactListener implements ContactListener {
 
 
     public void playerVSenemy(Entity player, Entity enemy){
-        System.out.println("may da bi dich dam vao mat");
         PlayerComponent playerComponent = ECSEngine.playerComponentMapper.get(player);
         EnemyComponent enemyComponent = ECSEngine.enemyComponentMapper.get(enemy);
 
@@ -127,7 +126,7 @@ public class WorldContactListener implements ContactListener {
 
         EnemyComponent enemyComponent = ECSEngine.enemyComponentMapper.get(enemy);
         DamageAreaComponent damageAreaComponent = ECSEngine.damageAreaComponentMapper.get(damageArea);
-        System.out.println("ban trung " +enemy);
+
         game.ecsEngine.EntityQueue.add(damageArea);
          enemyComponent.life -= 1;
         if(enemyComponent.life == 0) {

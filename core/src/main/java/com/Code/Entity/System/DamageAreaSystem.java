@@ -28,25 +28,12 @@ public class DamageAreaSystem extends IteratingSystem {
         Vector2 damageAreaPosition = box2DComponent.body.getPosition();
 
         if (damageAreaComponent.isAttack) {
-            Vector2 velocity = Vector2.Zero;
-            switch (damageAreaComponent.direction) {
-                case LEFT:
-                    velocity = new Vector2( - damageAreaComponent.speed, 0);
-                    break;
-                case RIGHT:
-                    velocity = new Vector2(damageAreaComponent.speed, 0);
-                    break;
-                case UP:
-                    velocity = new Vector2(0, damageAreaComponent.speed);
-                    break;
-                default:
-                    velocity = new Vector2(0, - damageAreaComponent.speed);
-                    break;
-            }
-            box2DComponent.body.setLinearVelocity(velocity);
+            Vector2 velocity = damageAreaComponent.direction;
+            Vector2 force = Vector2.Zero;
+            force.x = velocity.x * damageAreaComponent.speed;
+            force.y = velocity.y * damageAreaComponent.speed;
+            box2DComponent.body.setLinearVelocity(force);
         }
-
-
 
 
         if(damageAreaComponent.time <= 0) {

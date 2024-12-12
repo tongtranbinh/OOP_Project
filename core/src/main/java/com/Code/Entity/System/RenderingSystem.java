@@ -1,19 +1,18 @@
 package com.Code.Entity.System;
 
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
-import com.badlogic.ashley.systems.IteratingSystem;
 
-public class RenderingSystem extends IteratingSystem {
+import com.Code.Main;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-    public RenderingSystem(Family family) {
-        super(family);
+public class RenderingSystem  {
+    Main game;
+    SpriteBatch batch;
+    public RenderingSystem(Main game){
+        this.game = game;
+        this.batch = game.batch;
     }
 
-    @Override
-    protected void processEntity(Entity entity, float deltaTime) {
-
-
+    public void render(float delta){
 
     }
 }
