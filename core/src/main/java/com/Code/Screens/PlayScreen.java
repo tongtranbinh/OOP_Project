@@ -1,19 +1,23 @@
 package com.Code.Screens;
 
+import com.Code.Entity.Component.PlayerAnimation;
 import com.Code.Entity.ECSEngine;
 import com.Code.Entity.System.PhysicDebugSystem;
+import com.Code.Entity.System.RenderingSystem;
 import com.Code.Main;
 import com.Code.Map.MapMangager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import static com.Code.Main.MAX_STEP_TIME;
 
@@ -32,8 +36,9 @@ public class PlayScreen implements Screen {
 
     Box2DDebugRenderer box2DDebugRenderer = new Box2DDebugRenderer();
 
-
+    public RenderingSystem renderingSystem;
     public PlayScreen(Main game){
+
         this.game = game;
 
         //Create world
@@ -44,6 +49,13 @@ public class PlayScreen implements Screen {
         //Map load
         mapMangager = game.mapMangager;
         mapRenderer = new OrthogonalTiledMapRenderer(mapMangager.currentMap.tiledMap, 1 * Main.PPM);
+
+        //Player load
+        // Vẽ nhân vật
+        game.batch.setProjectionMatrix(Camera.combined);
+        
+
+
 
     }
 

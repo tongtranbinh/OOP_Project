@@ -8,6 +8,7 @@ import com.Code.Others.DirectionType;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -31,7 +32,7 @@ public class ECSEngine extends PooledEngine {
     public static final ComponentMapper<EnemyComponent> enemyComponentMapper = ComponentMapper.getFor(EnemyComponent.class);
     public static final ComponentMapper<DamageAreaComponent> damageAreaComponentMapper = ComponentMapper.getFor(DamageAreaComponent.class);
     public static final ComponentMapper<EntityComponent> entityComponentMapper = ComponentMapper.getFor(EntityComponent.class);
-
+    public static final ComponentMapper<PlayerAnimation> playerAnimationMapper = ComponentMapper.getFor(PlayerAnimation.class);
 
     public World world;
     Main game;
@@ -49,7 +50,9 @@ public class ECSEngine extends PooledEngine {
         this.addSystem(new EnemyMovementSystem(game));
         this.addSystem(new DamageAreaSystem(game));
         this.addSystem(new PhysicDebugSystem(game));
+        this.addSystem(new RenderingSystem(game));
     }
+
     public void createPlayer(Vector2 location){
         final Entity player = this.createEntity();
 
@@ -75,6 +78,11 @@ public class ECSEngine extends PooledEngine {
         playerComponent.timeAttack = 0;
         playerComponent.life = 10;
         player.add(playerComponent);
+
+        //animation component
+        final PlayerAnimation playerAnimation = this.createComponent(PlayerAnimation.class);
+        playerAnimation.CreatePlayerAnimation();
+        player.add(playerAnimation);
 
         this.addEntity(player);
         playerEntity = player;

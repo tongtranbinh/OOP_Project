@@ -85,8 +85,8 @@ public class Maploader {
             rectVertices[6] = rectangle.width;
             rectVertices[7] = 0;
 
-//            rectVertices[8] = 0;
-//            rectVertices[9] = 0;
+            // rectVertices[8] = 0;
+            // rectVertices[9] = 0;
 
             //System.out.println(rectangle.getX() + "cc" + rectangle.getY());
             if(rectangle.width == 0 || rectangle.height == 0) {continue;}
@@ -113,11 +113,9 @@ public class Maploader {
         }
     }
 
-    public Vector2 getPlayerStartingPosition(){return PlayerStartingPosition;}
-
     public Array<CollisionArea> getCollisionAreas(){return collisionAreas;}
 
     public Array<Vector2> getEnemyPosition(){return enemyPosition;}
 
-
+    public Vector2 getPlayerStartingPosition(){return PlayerStartingPosition;}
 }

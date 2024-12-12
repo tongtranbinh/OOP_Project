@@ -39,20 +39,7 @@ public class EnemyMovementSystem extends IteratingSystem {
         else {
             Duration = 0;
 
-            switch (enemyComponent.direction){
-                case UP:{
-                    enemyComponent.direction = DirectionType.RIGHT;
-                }
-                case DOWN:{
-
-                }
-                case LEFT:{
-
-                }
-                case RIGHT:{
-
-                }
-            }
+            enemyComponent.direction = DirectionType.RIGHT;
         }
 
     }

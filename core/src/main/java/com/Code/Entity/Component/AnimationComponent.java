@@ -1,11 +1,13 @@
 package com.Code.Entity.Component;
 
 import com.badlogic.ashley.core.Component;
-import com.badlogic.gdx.graphics.g2d.ParticleEffect;
-import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
+
+import java.util.ArrayList;
 public class AnimationComponent implements Component {
-    public ParticleEffect particleEffect;
-    public TextureAtlas atlas;
+
 }
+
+
