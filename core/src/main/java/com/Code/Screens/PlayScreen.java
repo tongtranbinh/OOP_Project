@@ -111,7 +111,7 @@ public class PlayScreen implements Screen {
 
 
     public void renderCamera(){
-        Camera.zoom = 1f;
+        Camera.zoom = 0.2f;
         Vector2 position = ECSEngine.box2DComponentMapper.get(game.mapMangager.ecsEngine.playerEntity).body.getPosition();
         Camera.position.set(position,0);
 
