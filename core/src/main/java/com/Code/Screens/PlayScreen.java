@@ -1,12 +1,16 @@
 package com.Code.Screens;
 
+import com.Code.Entity.ECSEngine;
+import com.Code.Entity.System.RenderingSystem;
 import com.Code.Scenes.Hud;
 import com.Code.Main;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -19,6 +23,7 @@ public class PlayScreen implements Screen {
     OrthogonalTiledMapRenderer mapRenderer;
 
     Box2DDebugRenderer box2DDebugRenderer = new Box2DDebugRenderer();
+    RenderingSystem renderingSystem;
 
     private Hud hud; // Thêm HUD
 
@@ -33,6 +38,9 @@ public class PlayScreen implements Screen {
 
         // Tạo HUD
         hud = new Hud(game.ecsEngine);
+
+        //render
+        renderingSystem = new RenderingSystem(game);
     }
 
     @Override
@@ -54,21 +62,21 @@ public class PlayScreen implements Screen {
         updateWorld();
 
         renderCamera();
-
+        mapRenderer.setView(Camera);
         mapRenderer.render();
 
-        game.batch.setProjectionMatrix(Camera.combined);
 
+        game.batch.setProjectionMatrix(Camera.combined);
         box2DDebugRenderer.render(game.world, Camera.combined);
 
         game.ecsEngine.update(1 / 60f);
         game.ecsEngine.destroyBody();
 
+        renderingSystem.render(delta);
         // Vẽ HUD
         hud.render(game.batch, game.ScreenWidth, game.ScreenHeight);
 
-        game.batch.begin();
-        game.batch.end();
+
     }
 
 
@@ -98,12 +106,13 @@ public class PlayScreen implements Screen {
         game.world.dispose();
         box2DDebugRenderer.dispose();
         hud.dispose(); // Hủy HUD
+        renderingSystem.dispose();
     }
 
 
     public void renderCamera(){
-        Camera.zoom = 0.5f;
-        Vector2 position = ECSEngine.box2DComponentMapper.get(mapMangager.ecsEngine.playerEntity).body.getPosition();
+        Camera.zoom = 1f;
+        Vector2 position = ECSEngine.box2DComponentMapper.get(game.mapMangager.ecsEngine.playerEntity).body.getPosition();
         Camera.position.set(position,0);
 
         mapRenderer.setView(Camera);
