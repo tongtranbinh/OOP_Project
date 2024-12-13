@@ -1,6 +1,7 @@
 package com.Code.Entity.System;
 
 import com.Code.Entity.Component.Box2DComponent;
+import com.Code.Entity.Component.PlayerComponent;
 import com.Code.Entity.ECSEngine;
 import com.Code.Main;
 import com.badlogic.ashley.core.Entity;
@@ -20,7 +21,7 @@ public class PhysicDebugSystem extends IteratingSystem {
 
 
     public PhysicDebugSystem(Main game) {
-        super(Family.all().get());
+        super(Family.all(PlayerComponent.class).get());
         this.game = game;
     }
 
@@ -31,5 +32,10 @@ public class PhysicDebugSystem extends IteratingSystem {
     }
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
+        PlayerComponent playerComponent = ECSEngine.playerComponentMapper.get(entity);
+        System.out.println(playerComponent.life);
+        if(playerComponent.life <= 0) {
+            System.out.println(" ban da bi dam chet");
+        }
     }
 }

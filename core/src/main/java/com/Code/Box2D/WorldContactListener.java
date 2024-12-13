@@ -1,9 +1,6 @@
 package com.Code.Box2D;
 
-import com.Code.Entity.Component.Box2DComponent;
-import com.Code.Entity.Component.DamageAreaComponent;
-import com.Code.Entity.Component.EnemyComponent;
-import com.Code.Entity.Component.PlayerComponent;
+import com.Code.Entity.Component.*;
 import com.Code.Entity.ECSEngine;
 import com.Code.Main;
 import com.badlogic.ashley.core.Entity;
@@ -59,6 +56,9 @@ public class WorldContactListener implements ContactListener {
                 hasDamageArea = true;
                 break;
             }
+            case 4:{
+                hasBoss = true;
+            }
         }
         switch (box2.ID) {
             case 0: {
@@ -78,6 +78,9 @@ public class WorldContactListener implements ContactListener {
                 hasDamageArea = true;
                 break;
             }
+            case 4:{
+                hasBoss = true;
+            }
         }
         if(hasPlayer && hasEnemy) {
             Entity playerEntity;
@@ -92,8 +95,22 @@ public class WorldContactListener implements ContactListener {
             Entity enemyEntity;
             if(box1.ID == 3) { damageAreaEntity = entity1; enemyEntity = entity2; }
             else { damageAreaEntity = entity2; enemyEntity = entity1; }
-
             damageAreaVSenemy(damageAreaEntity, enemyEntity);
+        }
+        if(hasDamageArea && hasPlayer){
+            Entity damageAreaEntity;
+            Entity playerEntity;
+            if(box1.ID == 3) { damageAreaEntity = entity1; playerEntity = entity2; }
+            else { damageAreaEntity = entity2; playerEntity = entity1; }
+            damageAreaVSplayer(damageAreaEntity, playerEntity);
+        }
+        if(hasBoss && hasDamageArea){
+            Entity damageAreaEntity;
+            Entity bossEntity;
+            if(box1.ID == 3) { damageAreaEntity = entity1; bossEntity = entity2; }
+            else { damageAreaEntity = entity2; bossEntity = entity1; }
+
+            damageAreaVSboss(damageAreaEntity, bossEntity);
         }
 
     }
@@ -118,20 +135,37 @@ public class WorldContactListener implements ContactListener {
     public void playerVSenemy(Entity player, Entity enemy){
         PlayerComponent playerComponent = ECSEngine.playerComponentMapper.get(player);
         EnemyComponent enemyComponent = ECSEngine.enemyComponentMapper.get(enemy);
+        playerComponent.life -= 5;
 
-        playerComponent.life -= 1;
     }
 
     public void damageAreaVSenemy(Entity damageArea, Entity enemy){
 
         EnemyComponent enemyComponent = ECSEngine.enemyComponentMapper.get(enemy);
         DamageAreaComponent damageAreaComponent = ECSEngine.damageAreaComponentMapper.get(damageArea);
-
+        if(damageAreaComponent.owner != 1) return;
         game.ecsEngine.EntityQueue.add(damageArea);
-         enemyComponent.life -= 1;
-        if(enemyComponent.life == 0) {
+        enemyComponent.life -= damageAreaComponent.damage;
+        if(enemyComponent.life <= 0) {
             game.ecsEngine.EntityQueue.add(enemy);
         }
+    }
+
+    public void damageAreaVSplayer(Entity damageArea, Entity player){
+        DamageAreaComponent damageAreaComponent = ECSEngine.damageAreaComponentMapper.get(damageArea);
+        PlayerComponent playerComponent = ECSEngine.playerComponentMapper.get(player);
+        if(damageAreaComponent.owner == 1) return;
+        game.ecsEngine.EntityQueue.add(damageArea);
+        playerComponent.life -= damageAreaComponent.damage;
+    }
+
+    public void damageAreaVSboss(Entity damageArea, Entity boss){
+        DamageAreaComponent damageAreaComponent = ECSEngine.damageAreaComponentMapper.get(damageArea);
+        BossComponent bossComponent = ECSEngine.bossComponentMapper.get(boss);
+        if(damageAreaComponent.owner == 4) return;
+        game.ecsEngine.EntityQueue.add(damageArea);
+        bossComponent.life -= damageAreaComponent.damage;
+        bossComponent.damed = true;
     }
 
     void reset() {
