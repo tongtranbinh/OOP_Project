@@ -165,6 +165,7 @@ public class WorldContactListener implements ContactListener {
         if(damageAreaComponent.owner == 4) return;
         game.ecsEngine.EntityQueue.add(damageArea);
         bossComponent.life -= damageAreaComponent.damage;
+        bossComponent.damed = true;
     }
 
     void reset() {

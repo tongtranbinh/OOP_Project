@@ -69,9 +69,9 @@ public class ECSEngine extends PooledEngine {
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(location);
         box2DComponent.body = world.createBody(bodyDef);
-        PolygonShape polygonShape = new PolygonShape();
-        polygonShape.setAsBox(game.BaseSize, game.BaseSize);
-        fixtureDef.shape = polygonShape;
+        CircleShape circleShape = new CircleShape();
+        circleShape.setRadius(game.BaseSize);
+        fixtureDef.shape = circleShape;
         box2DComponent.body.createFixture(fixtureDef).setUserData(player);
         box2DComponent.isDead = false;
 
@@ -102,9 +102,9 @@ public class ECSEngine extends PooledEngine {
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(location);
         box2DComponent.body = world.createBody(bodyDef);
-        PolygonShape polygonShape = new PolygonShape();
-        polygonShape.setAsBox(game.BaseSize, game.BaseSize);
-        fixtureDef.shape = polygonShape;
+        CircleShape circleShape = new CircleShape();
+        circleShape.setRadius(game.BaseSize);
+        fixtureDef.shape = circleShape;
         box2DComponent.body.createFixture(fixtureDef).setUserData(enemy);
         box2DComponent.isDead = false;
         enemy.add(box2DComponent);
@@ -167,9 +167,9 @@ public class ECSEngine extends PooledEngine {
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(location);
         box2DComponent.body = world.createBody(bodyDef);
-        PolygonShape polygonShape = new PolygonShape();
-        polygonShape.setAsBox(game.BaseSize * 2, game.BaseSize * 2);
-        fixtureDef.shape = polygonShape;
+        CircleShape circleShape = new CircleShape();
+        circleShape.setRadius(game.BaseSize * 2.5f);
+        fixtureDef.shape = circleShape;
         box2DComponent.body.createFixture(fixtureDef).setUserData(boss);
         box2DComponent.isDead = false;
         boss.add(box2DComponent);
@@ -188,6 +188,7 @@ public class ECSEngine extends PooledEngine {
         bossComponent.timeSkill1 = 0;
         bossComponent.timeSkill2 = 0;
         bossComponent.stop = false;
+        bossComponent.damed = false;
         bossComponent.direction = DOWN;
         boss.add(bossComponent);
 
