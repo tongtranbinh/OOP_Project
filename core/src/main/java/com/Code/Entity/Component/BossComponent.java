@@ -12,5 +12,6 @@ public class BossComponent extends EntityComponent{
     public float timeSkill2;
     public boolean stop;
     public boolean readytoAttack;
+    public boolean damed;
 
 }

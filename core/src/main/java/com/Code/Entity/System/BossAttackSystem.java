@@ -11,6 +11,10 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.Objects;
+
+import static java.lang.Math.abs;
+
 public class BossAttackSystem extends IteratingSystem {
 
     Main game;
@@ -31,6 +35,8 @@ public class BossAttackSystem extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
         BossComponent bossComponent = ECSEngine.bossComponentMapper.get(entity);
         Box2DComponent box2DComponent = ECSEngine.box2DComponentMapper.get(entity);
+        Box2DComponent player = ECSEngine.box2DComponentMapper.get(game.ecsEngine.playerEntity);
+
         position = box2DComponent.body.getPosition();
         bossComponent.reloadtime += deltaTime;
         bossComponent.reloadSkill += deltaTime;
@@ -78,7 +84,18 @@ public class BossAttackSystem extends IteratingSystem {
                 bossComponent.timeCntSkill1 += deltaTime;
                 if(bossComponent.timeCntSkill1 >= 0.6f){
 
-
+                    Vector2 dirCheck = new Vector2();
+                    dirCheck.x = player.body.getPosition().x - box2DComponent.body.getPosition().x ;
+                    dirCheck.y = player.body.getPosition().y - box2DComponent.body.getPosition().y;
+                    if(!Objects.equals(dirCheck, new Vector2(0, 0))) {
+                        if (abs(dirCheck.x) - abs(dirCheck.y) > 0) {
+                            if (dirCheck.x < 0) bossComponent.direction = DirectionType.LEFT;
+                            else bossComponent.direction = DirectionType.RIGHT;
+                        } else {
+                            if (dirCheck.y < 0) bossComponent.direction = DirectionType.DOWN;
+                            else bossComponent.direction = DirectionType.UP;
+                        }
+                    }
                     for (int i = 0; i < 5; i++){
                         switch (bossComponent.direction){
                             case RIGHT:{

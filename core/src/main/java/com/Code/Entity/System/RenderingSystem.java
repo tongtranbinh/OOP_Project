@@ -26,6 +26,7 @@ public class RenderingSystem {
     Main game;
     SpriteBatch batch;
     BossAnimation bossAnimation;
+    public float Statetime = 0;
     public Texture currentTexture = null;
     public ArrayList<Texture> up = new ArrayList<Texture>();
     public ArrayList<Texture> down = new ArrayList<Texture>();
@@ -43,6 +44,7 @@ public class RenderingSystem {
     }
 
     public void render(float delta){
+        Statetime += delta;
         batch.begin();
         renderBoss(delta);
         renderPLayer(delta);
@@ -122,12 +124,19 @@ public class RenderingSystem {
 
     public void renderBoss(float delta){
         for(Entity entity : game.ecsEngine.BossEntityArray){
+            BossComponent bossComponent = ECSEngine.bossComponentMapper.get(entity);
             Box2DComponent box2DComponent = ECSEngine.box2DComponentMapper.get(entity);
-            Sprite bossSprite = new Sprite(bossAnimation.getframes(delta));
             Vector2 pos = box2DComponent.body.getPosition();
-            bossSprite.setBounds( pos.x , pos.y , 10, 10 );
-            System.out.println(bossSprite);
+
+            Sprite bossSprite = new Sprite(bossAnimation.getframes(Statetime, bossAnimation.BossStand));
+            bossSprite.setBounds(pos.x - game.BaseSize * 3, pos.y - game.BaseSize * 3, game.BaseSize * 6, game.BaseSize * 6);
             bossSprite.draw(batch);
+
+            Sprite effect = new Sprite(bossAnimation.getframes(Statetime, bossAnimation.Effect));
+            effect.setBounds(pos.x - game.BaseSize * 3, pos.y - game.BaseSize * 3, game.BaseSize * 6, game.BaseSize * 6);
+            effect.draw(batch);
+
+
         }
 
     }

@@ -9,8 +9,9 @@ import com.badlogic.gdx.utils.Array;
 
 public class BossAnimation extends Sprite {
     public Texture texture;
-    Animation<TextureRegion> BossStand;
-    Animation<TextureRegion> BossAttack;
+    public Animation<TextureRegion> BossStand;
+    public Animation<TextureRegion> Effect;
+    public Animation<TextureRegion> BossDamaged;
     Array<TextureRegion> frames = new Array<TextureRegion>();
     public BossAnimation(){
         texture = new Texture("Boss/Crystal Knight.png");
@@ -18,19 +19,29 @@ public class BossAnimation extends Sprite {
             frames.add(new TextureRegion(texture,i * 64 ,0,64,64));
 
         }
-        BossStand = new Animation<TextureRegion>(0.5f, frames);
+        BossStand = new Animation<TextureRegion>(0.2f, frames);
         frames.clear();
-        texture = new Texture("Boss/BossAttack.png");
-        for(int i = 0; i < 3; i++){
+
+
+        texture = new Texture("Boss/effect.png");
+        for(int i = 0; i < 5; i++){
             frames.add(new TextureRegion(texture,i * 64 ,0,64,64));
         }
-        BossAttack = new Animation<TextureRegion>(0.5f, frames);
+        Effect = new Animation<TextureRegion>(0.2f, frames);
+        frames.clear();
+        texture = new Texture("Boss/BossDamaged.png");
+        for(int i = 0; i < 8; i++) {
+            frames.add(new TextureRegion(texture,0 ,0,64,64));
+        }
+
+        BossDamaged = new Animation<TextureRegion>(0.1f, frames);
+        frames.clear();
 
     }
 
-    public TextureRegion getframes(float delta){
+    public TextureRegion getframes(float delta,Animation<TextureRegion> animation){
         TextureRegion region;
-        region = BossAttack.getKeyFrame(delta, true);
+        region = animation.getKeyFrame(delta, true);
         return region;
     }
 
