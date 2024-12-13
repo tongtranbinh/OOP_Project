@@ -20,8 +20,6 @@ public class BossAttackSystem extends IteratingSystem {
     Main game;
     Vector2 position;
     Vector2 direction;
-    float speed, time;
-    int damage;
     float[][] dirx = {{-1, -0.7f, 0, 0.7f, 1, 0.7f, 0, -0.7f},{-0.92f, -0.38f, 0.38f, 0.92f, 0.92f, 0.38f, -0.38f, -0.92f}};
     float[][] diry = {{0, 0.7f, 1, 0.7f, 0, -0.7f, -1, -0.7f},{0.38f, 0.92f, 0.92f, 0.38f, -0.38f, -0.92f, -0.92f, -0.38f}};
 

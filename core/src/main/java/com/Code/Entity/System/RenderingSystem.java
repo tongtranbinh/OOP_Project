@@ -1,45 +1,20 @@
 package com.Code.Entity.System;
 
 
+
+import com.Code.Entity.Component.*;
 import com.Code.Controller.KeyHandler;
-import com.Code.Entity.Component.BossComponent;
 import com.Code.Entity.ECSEngine;
 import com.Code.Main;
 import com.Code.Others.BossAnimation;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.Code.Entity.Component.Box2DComponent;
-import com.Code.Entity.Component.PlayerComponent;
-import com.Code.Others.DirectionType;
-import com.Code.Effect.DamageArea;
-import com.Code.Main;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
-import com.Code.Entity.Component.Box2DComponent;
-import com.Code.Entity.Component.PlayerComponent;
-import com.Code.Entity.System.PlayerAttackSystem;
-import com.Code.Entity.ECSEngine;
-import com.Code.Others.DirectionType;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
-
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.Texture;
-import java.util.ArrayList;
-
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 
@@ -89,21 +64,23 @@ public class RenderingSystem {
 
 
 
+
     public RenderingSystem(Main game) {
         this.game = game;
         this.batch = game.batch;
         bossAnimation = new BossAnimation();
         keyHandler = game.keyHandler;
         CreatePlayerAnimation();
-
-        loadFightAnimations();
-        loadSwordAnimations();
     }
 
     public void render(float delta){
         Statetime += delta;
         batch.begin();
         renderBoss(delta);
+
+        renderDamagedArea(delta);
+        renderEnemy(delta);
+      
         handlePlayerAttack(delta);
         if(!isAttacking) {
             renderPLayer(delta);
@@ -114,22 +91,7 @@ public class RenderingSystem {
         }
         batch.end();
     }
-    public void loadFightAnimations() {
-        for (int i = 0; i <= 4; i++) {
-            SlashDown.add(new Texture("Player/Attack/Slash Down-Split/imageonline/" + i + "0.png"));
-            SlashUp.add(new Texture("Player/Attack/Slash Up-Split/imageonline/" + i + "0.png"));
-            SlashLeft.add(new Texture("Player/Attack/Slash Left-Split/imageonline/" + i + "0.png"));
-            SlashRight.add(new Texture("Player/Attack/Slash Right-Split/imageonline/-" + i + "0.png"));
-        }
-    }
-    public void loadSwordAnimations() {
-        for (int i = 0; i <= 4; i++) {
-            swordDown.add(new Texture("Player/Attack/Sword Down-Split/imageonline/" + i + "0.png"));
-            swordUp.add(new Texture("Player/Attack/Sword Up-Split/imageonline/" + i + "0.png"));
-            swordLeft.add(new Texture("Player/Attack/Sword Left-Split/imageonline/" + i + "0.png"));
-            swordRight.add(new Texture("Player/Attack/Sword Right-Split/imageonline/" + i + "0.png"));
-        }
-    }
+
     // Đọc các sprite (hình ảnh) của Player cho các hướng khác nhau
     public void CreatePlayerAnimation() {
         // Tải các sprite cho hướng "Down"
@@ -159,10 +121,6 @@ public class RenderingSystem {
             Texture sprite = new Texture(path);
             left.add(sprite);
         }
-        idleDown.add(new Texture("Player/Walk/Walk Down-split/imageonline/00.png"));
-        idleUp.add(new Texture("Player/Walk/Walk Up-split/imageonline/00.png"));
-        idleLeft.add(new Texture("Player/Walk/Walk Left-split/imageonline/00.png"));
-        idleRight.add(new Texture("Player/Walk/Walk Right-split/imageonline/00.png"));
     }
 
     // Render Player với animation và cập nhật frame theo delta time
@@ -245,7 +203,7 @@ public class RenderingSystem {
             return;
         }
         // Cập nhật thời gian để điều chỉnh frame của animation
-        stateTime += delta;
+        stateTime += delta;  // Cộng deltaTime vào stateTime để tạo chuyển động mượt mà
 
         // Tính toán chỉ số frame hiện tại
         int frameIndex = (int) (stateTime / 0.15f) % 5; // Mỗi frame hiển thị trong 0.1 giây
@@ -359,6 +317,8 @@ public class RenderingSystem {
 
         }
 
+
+        batch.draw(currentTexture, position.x - game.BaseSize * 1.5f , position.y - game.BaseSize * 1.5f, game.BaseSize * 3 , game.BaseSize * 3);
     }
     public void renderHandAnimation(float delta) {
 
@@ -423,7 +383,9 @@ public class RenderingSystem {
         }
     }
     public void renderBoss(float delta){
-        for(Entity entity : game.ecsEngine.BossEntityArray){
+        Family family = Family.all(BossComponent.class).get();
+        ImmutableArray<Entity> entities = game.ecsEngine.getEntitiesFor(family);
+        for(Entity entity : entities){
             BossComponent bossComponent = ECSEngine.bossComponentMapper.get(entity);
             Box2DComponent box2DComponent = ECSEngine.box2DComponentMapper.get(entity);
             Vector2 pos = box2DComponent.body.getPosition();
@@ -438,9 +400,34 @@ public class RenderingSystem {
 
 
         }
-
     }
 
+    public void renderDamagedArea(float delta){
+        Family family = Family.all(DamageAreaComponent.class).get();
+        ImmutableArray<Entity> entities = game.ecsEngine.getEntitiesFor(family);
+        for(Entity entity : entities){
+            Box2DComponent box2DComponent = ECSEngine.box2DComponentMapper.get(entity);
+            DamageAreaComponent damageAreaComponent = ECSEngine.damageAreaComponentMapper.get(entity);
+            Vector2 pos = box2DComponent.body.getPosition();
+            Sprite bullets;
+            if(damageAreaComponent.owner == 4)  bullets = new Sprite(bossAnimation.getframes(Statetime, bossAnimation.Bullets));
+            else bullets = new Sprite(bossAnimation.getframes(Statetime, bossAnimation.PlayerBullets));
+            bullets.setBounds(pos.x - game.BaseSize * 0.75f, pos.y - game.BaseSize * 0.75f, game.BaseSize * 1.5f, game.BaseSize * 1.5f);
+            bullets.draw(batch);
+        }
+    }
+
+    public void renderEnemy(float delta) {
+        Family family = Family.all(EnemyComponent.class).get();
+        ImmutableArray<Entity> entities = game.ecsEngine.getEntitiesFor(family);
+        for (Entity entity : entities) {
+            Box2DComponent box2DComponent = ECSEngine.box2DComponentMapper.get(entity);
+            Vector2 pos = box2DComponent.body.getPosition();
+            Sprite enemy = new Sprite(bossAnimation.getframes(Statetime, bossAnimation.Enemy));;
+            enemy.setBounds(pos.x - game.BaseSize * 1.5f, pos.y - game.BaseSize * 1.5f, game.BaseSize * 3f, game.BaseSize * 3f);
+            enemy.draw(batch);
+        }
+    }
     public void dispose() {
         for (Texture texture : down) {
             texture.dispose();
@@ -456,3 +443,4 @@ public class RenderingSystem {
         }
     }
 }
+
