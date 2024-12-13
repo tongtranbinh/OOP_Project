@@ -39,10 +39,6 @@ public class ECSEngine extends PooledEngine {
     Main game;
     public Array<Entity> EntityQueue = new Array<Entity>();
 
-    public Array<Entity> PlayerEntityArray = new Array<Entity>();
-    public Array<Entity> EnemyEntityArray = new Array<Entity>();
-    public Array<Entity> BossEntityArray = new Array<Entity>();
-    public Array<Entity> DamageEntityArray = new Array<Entity>();
 
 
     public ECSEngine(Main game){
@@ -87,7 +83,7 @@ public class ECSEngine extends PooledEngine {
         playerComponent.startPosition = location;
         player.add(playerComponent);
 
-        PlayerEntityArray.add(player);
+
         this.addEntity(player);
         playerEntity = player;
 
@@ -116,7 +112,7 @@ public class ECSEngine extends PooledEngine {
         enemyComponent.startPosition = location;
         enemy.add(enemyComponent);
 
-        EnemyEntityArray.add(enemy);
+
         this.addEntity(enemy);
 
 
@@ -153,7 +149,7 @@ public class ECSEngine extends PooledEngine {
         box2DComponent.isDead = false;
         damageAreaEntity.add(box2DComponent);
 
-        DamageEntityArray.add(damageAreaEntity);
+
         this.addEntity(damageAreaEntity);
 
     }
@@ -192,7 +188,7 @@ public class ECSEngine extends PooledEngine {
         bossComponent.direction = DOWN;
         boss.add(bossComponent);
 
-        BossEntityArray.add(boss);
+
         this.addEntity(boss);
 
     }

@@ -34,7 +34,10 @@ public class PlayerMovementSystem extends IteratingSystem {
         this.Input();
 
         float move = (float) sqrt(move_x * move_x + move_y * move_y);
-        if(playerComponent.stop) move = 0;
+        if(playerComponent.stop) {
+            box2DComponent.body.setLinearVelocity(new Vector2(0,0));
+            return;
+        }
 
 
         if (move != 0) {
