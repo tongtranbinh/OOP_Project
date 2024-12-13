@@ -8,6 +8,7 @@ import com.Code.Others.DirectionType;
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -36,8 +37,13 @@ public class ECSEngine extends PooledEngine {
 
     public World world;
     Main game;
-    public Array<Entity> EntityQueue = new Array<>();
+    public Array<Entity> EntityQueue = new Array<Entity>();
+
     public Array<Entity> PlayerEntityArray = new Array<Entity>();
+    public Array<Entity> EnemyEntityArray = new Array<Entity>();
+    public Array<Entity> BossEntityArray = new Array<Entity>();
+    public Array<Entity> DamageEntityArray = new Array<Entity>();
+
 
     public ECSEngine(Main game){
         super();
@@ -49,7 +55,7 @@ public class ECSEngine extends PooledEngine {
         this.addSystem(new PlayerMovementSystem(game));
         this.addSystem(new EnemyMovementSystem(game));
         this.addSystem(new DamageAreaSystem(game));
-        this.addSystem(new PhysicDebugSystem(game));
+        //this.addSystem(new PhysicDebugSystem(game));
         this.addSystem(new BossMovementSystem(game));
         this.addSystem(new BossAttackSystem(game));
     }
@@ -63,9 +69,9 @@ public class ECSEngine extends PooledEngine {
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(location);
         box2DComponent.body = world.createBody(bodyDef);
-        PolygonShape polygonShape = new PolygonShape();
-        polygonShape.setAsBox(game.BaseSize, game.BaseSize);
-        fixtureDef.shape = polygonShape;
+        CircleShape circleShape = new CircleShape();
+        circleShape.setRadius(game.BaseSize);
+        fixtureDef.shape = circleShape;
         box2DComponent.body.createFixture(fixtureDef).setUserData(player);
         box2DComponent.isDead = false;
 
@@ -76,7 +82,8 @@ public class ECSEngine extends PooledEngine {
         playerComponent.direction = DOWN;
         playerComponent.speed = 150 * Main.PPM;
         playerComponent.timeAttack = 0;
-        playerComponent.life = 10;
+        playerComponent.life = 50;
+        playerComponent.maxLife = 50;   // Giá trị tối đa của máu
         playerComponent.startPosition = location;
         player.add(playerComponent);
 
@@ -95,9 +102,9 @@ public class ECSEngine extends PooledEngine {
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(location);
         box2DComponent.body = world.createBody(bodyDef);
-        PolygonShape polygonShape = new PolygonShape();
-        polygonShape.setAsBox(game.BaseSize, game.BaseSize);
-        fixtureDef.shape = polygonShape;
+        CircleShape circleShape = new CircleShape();
+        circleShape.setRadius(game.BaseSize);
+        fixtureDef.shape = circleShape;
         box2DComponent.body.createFixture(fixtureDef).setUserData(enemy);
         box2DComponent.isDead = false;
         enemy.add(box2DComponent);
@@ -105,10 +112,11 @@ public class ECSEngine extends PooledEngine {
         //enemyComponent
         EnemyComponent enemyComponent = this.createComponent(EnemyComponent.class);
         enemyComponent.speed = 25 * Main.PPM;
-        enemyComponent.life = 3;
+        enemyComponent.life = 25;
         enemyComponent.startPosition = location;
         enemy.add(enemyComponent);
 
+        EnemyEntityArray.add(enemy);
         this.addEntity(enemy);
 
 
@@ -136,16 +144,16 @@ public class ECSEngine extends PooledEngine {
         bodyDef.type = BodyDef.BodyType.KinematicBody;
         bodyDef.position.set(damageArea.position);
         box2DComponent.body = world.createBody(bodyDef);
-        PolygonShape polygonShape = new PolygonShape();
-        polygonShape.setAsBox(damageArea.width, damageArea.height);
-        fixtureDef.shape = polygonShape;
+        CircleShape circleShape = new CircleShape();
+        circleShape.setRadius(damageArea.width);
+        fixtureDef.shape = circleShape;
         fixtureDef.isSensor = true;
 
         box2DComponent.body.createFixture(fixtureDef).setUserData(damageAreaEntity);
         box2DComponent.isDead = false;
-
         damageAreaEntity.add(box2DComponent);
 
+        DamageEntityArray.add(damageAreaEntity);
         this.addEntity(damageAreaEntity);
 
     }
@@ -159,9 +167,9 @@ public class ECSEngine extends PooledEngine {
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(location);
         box2DComponent.body = world.createBody(bodyDef);
-        PolygonShape polygonShape = new PolygonShape();
-        polygonShape.setAsBox(game.BaseSize * 2, game.BaseSize * 2);
-        fixtureDef.shape = polygonShape;
+        CircleShape circleShape = new CircleShape();
+        circleShape.setRadius(game.BaseSize * 2.5f);
+        fixtureDef.shape = circleShape;
         box2DComponent.body.createFixture(fixtureDef).setUserData(boss);
         box2DComponent.isDead = false;
         boss.add(box2DComponent);
@@ -169,7 +177,7 @@ public class ECSEngine extends PooledEngine {
         //enemyComponent
         BossComponent bossComponent = this.createComponent(BossComponent.class);
         bossComponent.speed = 25 * Main.PPM;
-        bossComponent.life = 10;
+        bossComponent.life = 300;
         bossComponent.startPosition = location;
         bossComponent.readytoAttack = false;
         bossComponent.reloadtime = 0;
@@ -180,10 +188,11 @@ public class ECSEngine extends PooledEngine {
         bossComponent.timeSkill1 = 0;
         bossComponent.timeSkill2 = 0;
         bossComponent.stop = false;
+        bossComponent.damed = false;
         bossComponent.direction = DOWN;
         boss.add(bossComponent);
 
-
+        BossEntityArray.add(boss);
         this.addEntity(boss);
 
     }
@@ -208,4 +217,8 @@ public class ECSEngine extends PooledEngine {
 
         EntityQueue.clear();
     }
+    public Main getGame() {
+        return game;
+    }
+
 }

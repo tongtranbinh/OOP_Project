@@ -11,6 +11,10 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.Objects;
+
+import static java.lang.Math.abs;
+
 public class BossAttackSystem extends IteratingSystem {
 
     Main game;
@@ -21,7 +25,7 @@ public class BossAttackSystem extends IteratingSystem {
     float[][] dirx = {{-1, -0.7f, 0, 0.7f, 1, 0.7f, 0, -0.7f},{-0.92f, -0.38f, 0.38f, 0.92f, 0.92f, 0.38f, -0.38f, -0.92f}};
     float[][] diry = {{0, 0.7f, 1, 0.7f, 0, -0.7f, -1, -0.7f},{0.38f, 0.92f, 0.92f, 0.38f, -0.38f, -0.92f, -0.92f, -0.38f}};
 
-    float[] dir = {-300, -200, -100, 0 , 100 , 200, 300};
+    float[] dir = {-1, -0.4f, 0 , 0.4f, 1};
     public BossAttackSystem(Main  game) {
         super(Family.all(BossComponent.class, Box2DComponent.class).get());
         this.game = game;
@@ -31,6 +35,8 @@ public class BossAttackSystem extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
         BossComponent bossComponent = ECSEngine.bossComponentMapper.get(entity);
         Box2DComponent box2DComponent = ECSEngine.box2DComponentMapper.get(entity);
+        Box2DComponent player = ECSEngine.box2DComponentMapper.get(game.ecsEngine.playerEntity);
+
         position = box2DComponent.body.getPosition();
         bossComponent.reloadtime += deltaTime;
         bossComponent.reloadSkill += deltaTime;
@@ -39,7 +45,7 @@ public class BossAttackSystem extends IteratingSystem {
             for (int i = 0; i <= 7; i++){
                 direction = new Vector2(dirx[0][i], diry[0][i]);
                 game.ecsEngine.createDamageArea(new DamageArea(position, direction,
-                    game.BaseSize, game.BaseSize, 10, 200 * Main.PPM, 5f,4, true));
+                    game.BaseSize/2, game.BaseSize/2, 10, 170 * Main.PPM, 5f,4, true));
             }
         }
         if(bossComponent.reloadSkill > 5f && bossComponent.readytoAttack){
@@ -56,7 +62,7 @@ public class BossAttackSystem extends IteratingSystem {
                     for (int i = 0; i <= 7; i++){
                         direction = new Vector2(dirx[t][i], diry[t][i]);
                         game.ecsEngine.createDamageArea(new DamageArea(position, direction,
-                            game.BaseSize, game.BaseSize, 10, 200 * Main.PPM, 5f, 4, true));
+                            game.BaseSize/2, game.BaseSize/2, 10, 170 * Main.PPM, 5f, 4, true));
                     }
                     bossComponent.timeCntSkill1 = 0;
                 }
@@ -77,24 +83,43 @@ public class BossAttackSystem extends IteratingSystem {
                 bossComponent.timeSkill1 += deltaTime;
                 bossComponent.timeCntSkill1 += deltaTime;
                 if(bossComponent.timeCntSkill1 >= 0.6f){
-                    direction = new Vector2(0,0);
-                    direction.x += (bossComponent.direction == DirectionType.RIGHT) ? 1 : 0;
-                    direction.x -= (bossComponent.direction == DirectionType.LEFT) ? 1 : 0;
-                    direction.y -= (bossComponent.direction == DirectionType.DOWN) ? 1 : 0;
-                    direction.y += (bossComponent.direction == DirectionType.UP) ? 1 : 0;
 
-                    for (int i = 0; i < 7; i++){
-                        float posx = position.x;
-                        float posy = position.y;
-
-                        if((bossComponent.direction == DirectionType.RIGHT) ||
-                            (bossComponent.direction == DirectionType.LEFT)) posy += (dir[i] * Main.PPM);
-                        if((bossComponent.direction == DirectionType.UP) ||
-                            (bossComponent.direction == DirectionType.DOWN)) posx += (dir[i] * Main.PPM);
-                        game.ecsEngine.createDamageArea(new DamageArea(new Vector2(posx, posy), direction,
-                            game.BaseSize, game.BaseSize, 10, 200 * Main.PPM, 5f, 4, true));
+                    Vector2 dirCheck = new Vector2();
+                    dirCheck.x = player.body.getPosition().x - box2DComponent.body.getPosition().x ;
+                    dirCheck.y = player.body.getPosition().y - box2DComponent.body.getPosition().y;
+                    if(!Objects.equals(dirCheck, new Vector2(0, 0))) {
+                        if (abs(dirCheck.x) - abs(dirCheck.y) > 0) {
+                            if (dirCheck.x < 0) bossComponent.direction = DirectionType.LEFT;
+                            else bossComponent.direction = DirectionType.RIGHT;
+                        } else {
+                            if (dirCheck.y < 0) bossComponent.direction = DirectionType.DOWN;
+                            else bossComponent.direction = DirectionType.UP;
+                        }
                     }
-                    System.out.println("cc");
+                    for (int i = 0; i < 5; i++){
+                        switch (bossComponent.direction){
+                            case RIGHT:{
+                                direction =(new Vector2(0.5f, dir[i])) ;
+                                break;
+                            }
+                            case LEFT:{
+                                direction =(new Vector2(-0.5f, dir[i])) ;
+                                break;
+
+                            }
+                            case UP:{
+                                direction = (new Vector2(dir[i], 0.5f)) ;
+                                break;
+                            }
+                            case DOWN:{
+                                direction =(new Vector2(dir[i], -0.5f));
+                                break;
+                            }
+                        }
+
+                        game.ecsEngine.createDamageArea(new DamageArea(position, direction,
+                            game.BaseSize/2, game.BaseSize/2, 10, 190 * Main.PPM, 5f, 4, true));
+                    }
                     bossComponent.timeCntSkill1 = 0;
                 }
 

@@ -1,5 +1,19 @@
 package com.Code.Entity.System;
 
+
+import com.Code.Entity.Component.BossComponent;
+import com.Code.Entity.ECSEngine;
+import com.Code.Main;
+import com.Code.Others.BossAnimation;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.Family;
+import com.Code.Entity.Component.Box2DComponent;
+import com.Code.Entity.Component.PlayerComponent;
 import com.Code.Others.DirectionType;
 import com.Code.Effect.DamageArea;
 import com.Code.Main;
@@ -26,16 +40,35 @@ import java.util.ArrayList;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.ArrayList;
+
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+
 
 
 public class RenderingSystem {
     Main game;
     SpriteBatch batch;
+    BossAnimation bossAnimation;
+    public float Statetime = 0;
+    int[] animationDownfixX = {15, 15, 12, 9, 6};
+    int[] animationDownfixY = {9, 15, 12, 15, 12};
+    int[] animationLeftfixX = {6, 6, 6, 9, 6};
+    int[] animationleftfixY = {6, 9, 12, 0, 0};
+    int[] animationRightfixX = {15, 15, 12, 12, 12};
+    int[] animationRightfixY = {9, 15, 12, 15, 12};
+    int[] animationUpfixX = {15, 15, 12, 9, 6};
+    int[] animationUpfixY = {9, 15, 12, 15, 12};
+
+
+
     public Texture currentTexture = null;
     public ArrayList<Texture> up = new ArrayList<Texture>();
     public ArrayList<Texture> down = new ArrayList<Texture>();
     public ArrayList<Texture> right = new ArrayList<Texture>();
     public ArrayList<Texture> left = new ArrayList<Texture>();
+    private float stateTime = 0f; // Thời gian trạng thái để điều chỉnh animation
     public ArrayList<Texture> idleUp = new ArrayList<>();
     public ArrayList<Texture> idleDown = new ArrayList<>();
     public ArrayList<Texture> idleLeft = new ArrayList<>();
@@ -48,30 +81,36 @@ public class RenderingSystem {
     public ArrayList<Texture> swordDown = new ArrayList<>();
     public ArrayList<Texture> swordLeft = new ArrayList<>();
     public ArrayList<Texture> swordRight = new ArrayList<>();
-    public float stateTime = 0f; // Thời gian trạng thái để điều chỉnh animation
-    public float attackTime = 0f;
-
     private boolean isAttacking = false;
+
 
 
     public RenderingSystem(Main game) {
         this.game = game;
         this.batch = game.batch;
+        bossAnimation = new BossAnimation();
         CreatePlayerAnimation();
+
         loadFightAnimations();
         loadSwordAnimations();
     }
 
     public void render(float delta){
+        Statetime += delta;
         batch.begin();
-
+        renderBoss(delta);
+        handlePlayerAttack(delta);
+        if(!isAttacking) {
             renderPLayer(delta);
-            handlePlayerAttack(delta);
+        }
+        if(isAttacking){
+
             renderFightAnimation(delta);
+        }
+
+
 
         batch.end();
-
-
     }
     public void loadFightAnimations() {
         for (int i = 0; i <= 4; i++) {
@@ -89,7 +128,6 @@ public class RenderingSystem {
             swordRight.add(new Texture("Player/Attack/Sword Right-Split/imageonline/" + i + "0.png"));
         }
     }
-
     // Đọc các sprite (hình ảnh) của Player cho các hướng khác nhau
     public void CreatePlayerAnimation() {
         // Tải các sprite cho hướng "Down"
@@ -128,72 +166,69 @@ public class RenderingSystem {
     // Render Player với animation và cập nhật frame theo delta time
     public void renderPLayer(float delta) {
 
-        for (Entity entity : game.ecsEngine.PlayerEntityArray) {
-            // Lấy thông tin về PlayerComponent
-            PlayerComponent playerComponent = game.ecsEngine.playerComponentMapper.get(entity);
-            Box2DComponent box2DComponent = entity.getComponent(Box2DComponent.class);
-            Vector2 position = box2DComponent.body.getPosition();
-            // Kiểm tra nếu nhân vật không di chuyển
-            if (!Gdx.input.isKeyPressed(Input.Keys.W) &&
-                !Gdx.input.isKeyPressed(Input.Keys.S) &&
-                !Gdx.input.isKeyPressed(Input.Keys.A) &&
-                !Gdx.input.isKeyPressed(Input.Keys.D)) {
+        Entity entity = game.ecsEngine.playerEntity;
+        // Lấy thông tin về PlayerComponent
+        PlayerComponent playerComponent = ECSEngine.playerComponentMapper.get(entity);
+        Box2DComponent box2DComponent = entity.getComponent(Box2DComponent.class);
+        Vector2 position = box2DComponent.body.getPosition();
+        if (!Gdx.input.isKeyPressed(Input.Keys.W) &&
+            !Gdx.input.isKeyPressed(Input.Keys.S) &&
+            !Gdx.input.isKeyPressed(Input.Keys.A) &&
+            !Gdx.input.isKeyPressed(Input.Keys.D)) {
+            // Cập nhật thời gian để điều chỉnh frame của animation
+            stateTime += delta;  // Cộng deltaTime vào stateTime để tạo chuyển động mượt mà
 
-                // Hiển thị hoạt ảnh đứng yên tương ứng với hướng
-                switch (playerComponent.direction) {
-                    case DOWN:
-                        currentTexture = idleDown.get(0);
-                        break;
-                    case UP:
-                        currentTexture = idleUp.get(0);
-                        break;
-                    case LEFT:
-                        currentTexture = idleLeft.get(0);
-                        break;
-                    case RIGHT:
-                        currentTexture = idleRight.get(0);
-                        break;
+            // Tính toán chỉ số frame hiện tại
+            int frameIndex = (int) (stateTime * 10) % 12;  // Mỗi sprite hiện trong 0.1 giây, có 12 frame
 
-                }
-                batch.draw(currentTexture, position.x - 1.5f * game.BaseSize, position.y - 1.5f * game.BaseSize, 3f, 3f);
-            } else {
-
-                // Cập nhật thời gian để điều chỉnh frame của animation
-                stateTime += delta;  // Cộng deltaTime vào stateTime để tạo chuyển động mượt mà
-
-                // Tính toán chỉ số frame hiện tại
-                int frameIndex = (int) (stateTime * 10) % 12;  // Mỗi sprite hiện trong 0.1 giây, có 12 frame
-
-                // Chọn danh sách sprites dựa trên hướng di chuyển của Player
-                switch (playerComponent.direction) {
-                    case DOWN:
-                        currentTexture = down.get(frameIndex);
-                        break;
-                    case UP:
-                        currentTexture = up.get(frameIndex);
-                        break;
-                    case LEFT:
-                        currentTexture = left.get(frameIndex);
-                        break;
-                    case RIGHT:
-                        currentTexture = right.get(frameIndex);
-                        break;
-                }
-
-                // Vẽ sprite lên màn hình tại vị trí của Player
-
-
-                batch.draw(currentTexture, position.x - 1.5f * game.BaseSize, position.y - 1.5f * game.BaseSize, 3f, 3f);
+            // Chọn danh sách sprites dựa trên hướng di chuyển của Player
+            switch (playerComponent.direction) {
+                case DOWN:
+                    currentTexture = idleDown.get(0);
+                    break;
+                case UP:
+                    currentTexture = idleUp.get(0);
+                    break;
+                case LEFT:
+                    currentTexture = idleLeft.get(0);
+                    break;
+                case RIGHT:
+                    currentTexture = idleRight.get(0);
+                    break;
 
             }
+
+            // Vẽ sprite lên màn hình tại vị trí của Player
+            batch.draw(currentTexture, position.x - game.BaseSize * 1.5f, position.y - game.BaseSize * 1.5f, game.BaseSize * 3, game.BaseSize * 3);
+        }else { // Cập nhật thời gian để điều chỉnh frame của animation
+            stateTime += delta;  // Cộng deltaTime vào stateTime để tạo chuyển động mượt mà
+
+            // Tính toán chỉ số frame hiện tại
+            int frameIndex = (int) (stateTime * 10) % 12;  // Mỗi sprite hiện trong 0.1 giây, có 12 frame
+
+            // Chọn danh sách sprites dựa trên hướng di chuyển của Player
+            switch (playerComponent.direction) {
+                case DOWN:
+                    currentTexture = down.get(frameIndex);
+                    break;
+                case UP:
+                    currentTexture = up.get(frameIndex);
+                    break;
+                case LEFT:
+                    currentTexture = left.get(frameIndex);
+                    break;
+                case RIGHT:
+                    currentTexture = right.get(frameIndex);
+                    break;
+            }
+            batch.draw(currentTexture, position.x - 1.5f * game.BaseSize, position.y - 1.5f * game.BaseSize, 3f, 3f);
         }
+
     }
     public void handlePlayerAttack(float delta) {
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.J)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.J) && !isAttacking) {
             isAttacking = true;
-
-
             stateTime = 0f; // Reset stateTime khi bắt đầu đánh
         }
 
@@ -211,24 +246,33 @@ public class RenderingSystem {
         stateTime += delta;
 
         // Tính toán chỉ số frame hiện tại
-        int frameIndex = (int) (stateTime * 10) % 5; // Mỗi frame hiển thị trong 0.1 giây
-        for (Entity Entity : game.ecsEngine.PlayerEntityArray) {
+        int frameIndex = (int) (stateTime / 0.5f) % 5; // Mỗi frame hiển thị trong 0.1 giây
+        Entity entity = game.ecsEngine.playerEntity;
             //Player Position Info
-            Box2DComponent box2DComponent = Entity.getComponent(Box2DComponent.class);
+            Box2DComponent box2DComponent = entity.getComponent(Box2DComponent.class);
             Vector2 position = box2DComponent.body.getPosition();
             // Lấy frame hiện tại dựa trên hướng và loại hoạt ảnh
-            PlayerComponent playerComponent = game.ecsEngine.playerComponentMapper.get(Entity);
+            PlayerComponent playerComponent = game.ecsEngine.playerComponentMapper.get(entity);
+
+
+
             switch (playerComponent.direction) {
                 case DOWN:
+
                     currentTexture = swordDown.get(frameIndex);
+
                     break;
                 case UP:
+
                     currentTexture = swordUp.get(frameIndex);
+
                     break;
                 case LEFT:
+
                     currentTexture = swordLeft.get(frameIndex);
                     break;
                 case RIGHT:
+
                     currentTexture = swordRight.get(frameIndex);
                     break;
             }
@@ -236,10 +280,12 @@ public class RenderingSystem {
 
             if (playerComponent.direction == DirectionType.UP) {
                 if (currentTexture != null) {
-                    batch.draw(currentTexture,
+                    batch.draw(
+                        currentTexture,
                         position.x - 1.5f * game.BaseSize,
                         position.y - 1.0f * game.BaseSize,
-                        3f, 3f);
+                        3f, 3f
+                    );
                 }
             }
 
@@ -259,7 +305,7 @@ public class RenderingSystem {
             }
 
             batch.draw(currentTexture, position.x - 1.5f * game.BaseSize, position.y - 1.5f * game.BaseSize, 3f, 3f);
-            if (stateTime > 1.5f) { // Giả sử hoạt ảnh đánh kéo dài 0.5 giây
+            if (stateTime >= 2.0f) { // Giả sử hoạt ảnh đánh kéo dài 0.5 giây
                 isAttacking = false;
             }
 
@@ -280,30 +326,54 @@ public class RenderingSystem {
                 if (currentTexture != null) {
                     switch (playerComponent.direction) {
                         case DOWN:
-                            batch.draw(currentTexture,
-                                position.x - 2.0f * game.BaseSize, // lệch trái
-                                position.y - 2.0f * game.BaseSize, // Vẽ thấp hơn một chút
-                                3f, 3f);
+                            batch.draw(
+                                currentTexture,
+                                position.x - 1.5f * game.BaseSize - animationDownfixX[frameIndex] * Main.PPM, // lệch trái
+                                position.y - 1.5f * game.BaseSize - animationDownfixY[frameIndex] * Main.PPM, // Vẽ thấp hơn một chút
+                                3f, 3f
+                            );
                             break;
                         case LEFT:
-                            batch.draw(currentTexture,
-                                position.x - 2.0f * game.BaseSize, // Vẽ lệch trái một chút
-                                position.y - 1.5f * game.BaseSize, // Giữ nguyên vị trí Y
-                                3f, 3f);
+
+                                batch.draw(currentTexture,
+                                    position.x - 1.5f * game.BaseSize -1.0f, // Vẽ lệch trái một chút
+                                    position.y - 1.5f * game.BaseSize, // Giữ nguyên vị trí Y
+                                    3f, 3f);
+
                             break;
                         case RIGHT:
-                            batch.draw(currentTexture,
-                                position.x - 1.0f * game.BaseSize, // Vẽ lệch phải một chút
-                                position.y - 1.5f * game.BaseSize, // Giữ nguyên vị trí Y
-                                3f, 3f);
+                            batch.draw(
+                                currentTexture,
+                                position.x - 1.5f * game.BaseSize , // Vẽ lệch phải một chút
+                                position.y - 1.5f * game.BaseSize , // Giữ nguyên vị trí Y
+                                3f, 3f
+                            );
                             break;
                     }
                 }
-            }
+
         }
 
     }
 
+    public void renderBoss(float delta){
+        for(Entity entity : game.ecsEngine.BossEntityArray){
+            BossComponent bossComponent = ECSEngine.bossComponentMapper.get(entity);
+            Box2DComponent box2DComponent = ECSEngine.box2DComponentMapper.get(entity);
+            Vector2 pos = box2DComponent.body.getPosition();
+
+            Sprite bossSprite = new Sprite(bossAnimation.getframes(Statetime, bossAnimation.BossStand));
+            bossSprite.setBounds(pos.x - game.BaseSize * 3, pos.y - game.BaseSize * 3, game.BaseSize * 6, game.BaseSize * 6);
+            bossSprite.draw(batch);
+
+            Sprite effect = new Sprite(bossAnimation.getframes(Statetime, bossAnimation.Effect));
+            effect.setBounds(pos.x - game.BaseSize * 3, pos.y - game.BaseSize * 3, game.BaseSize * 6, game.BaseSize * 6);
+            effect.draw(batch);
+
+
+        }
+
+    }
 
     public void dispose() {
         for (Texture texture : down) {
@@ -316,30 +386,6 @@ public class RenderingSystem {
             texture.dispose();
         }
         for (Texture texture : right) {
-            texture.dispose();
-        }
-        for (Texture texture : SlashUp) {
-            texture.dispose();
-        }
-        for (Texture texture : SlashDown) {
-            texture.dispose();
-        }
-        for (Texture texture : SlashLeft) {
-            texture.dispose();
-        }
-        for (Texture texture : SlashRight) {
-            texture.dispose();
-        }
-        for (Texture texture : swordUp) {
-            texture.dispose();
-        }
-        for (Texture texture : swordDown) {
-            texture.dispose();
-        }
-        for (Texture texture : swordLeft) {
-            texture.dispose();
-        }
-        for (Texture texture : swordRight) {
             texture.dispose();
         }
     }

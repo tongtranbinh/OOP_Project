@@ -6,6 +6,7 @@ import com.Code.Entity.Component.Box2DComponent;
 import com.Code.Entity.Component.PlayerComponent;
 import com.Code.Entity.ECSEngine;
 import com.Code.Main;
+import com.Code.Others.DirectionType;
 import com.Code.Others.SteerableAgent;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
@@ -14,6 +15,10 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.math.Vector2;
+
+import java.util.Objects;
+
+import static java.lang.Math.abs;
 
 public class BossMovementSystem extends IteratingSystem {
 
@@ -41,7 +46,9 @@ public class BossMovementSystem extends IteratingSystem {
         SteerableAgent enemySteerable = new SteerableAgent(box2DComponent.body, 1.5f);
         SteerableAgent playerSteerable = new SteerableAgent(b2dPlayer.body, 1.5f);
 
-        if (distance < 200 * Main.PPM) bossCmp.readytoAttack = true;
+        if (distance < 150 * Main.PPM) {
+            bossCmp.readytoAttack = true;
+        }
         if (bossCmp.readytoAttack && !bossCmp.stop) {
             Arrive<Vector2> arriveBehavior = new Arrive<>(enemySteerable, playerSteerable)
                 .setArrivalTolerance(0.1f)
@@ -63,6 +70,18 @@ public class BossMovementSystem extends IteratingSystem {
         if(bossCmp.stop){
             box2DComponent.body.setLinearVelocity(0,0);
         }
+        Vector2 dirCheck = box2DComponent.body.getLinearVelocity();
+        if(!Objects.equals(dirCheck, new Vector2(0, 0))) {
+            if(abs(dirCheck.x) - abs(dirCheck.y) > 0) {
+                if(dirCheck.x < 0) bossCmp.direction = DirectionType.LEFT;
+                else bossCmp.direction = DirectionType.RIGHT;
+            }
+            else {
+                if(dirCheck.y < 0) bossCmp.direction = DirectionType.DOWN;
+                else bossCmp.direction = DirectionType.UP;
+            }
+        }
+
     }
 
     public Entity getPlayerEntity () {

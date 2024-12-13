@@ -18,10 +18,8 @@ import com.badlogic.gdx.assets.AssetManager;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends Game {
-    public static final int V_WIDTH = 400;
-    public static final int V_HEIGHT = 208;
 
-    public static final float PPM = 1 / 16f;
+    public static final float PPM = 1/ 16f;
     public static final float MAX_STEP_TIME = 1/60f;
 
     public float BaseSize = 16 * PPM;
@@ -56,7 +54,8 @@ public class Main extends Game {
         worldContactListener = new WorldContactListener(this);
         world.setContactListener(worldContactListener);
 
-        setScreen(new MenuScreen(this)); // Chuyển tới màn hình loading khi game bắt đầu
+        setScreen(new MenuScreen(this)); // Chuyển tới màn hình menu khi game bắt đầ
+
         Gdx.input.setInputProcessor(keyHandler);
     }
 
