@@ -248,7 +248,7 @@ public class RenderingSystem {
         stateTime += delta;
 
         // Tính toán chỉ số frame hiện tại
-        int frameIndex = (int) (stateTime / 0.5f) % 5; // Mỗi frame hiển thị trong 0.1 giây
+        int frameIndex = (int) (stateTime / 0.15f) % 5; // Mỗi frame hiển thị trong 0.1 giây
 
         Entity entity = game.ecsEngine.playerEntity;
             //Player Position Info
@@ -309,7 +309,7 @@ public class RenderingSystem {
             System.out.println(frameIndex);
 
             batch.draw(currentTexture, position.x - 1.5f * game.BaseSize, position.y - 1.5f * game.BaseSize, 3f, 3f);
-            if (stateTime >= 1.0f) { // Giả sử hoạt ảnh đánh kéo dài 0.5 giây
+            if (stateTime >= 0.6f) { // Giả sử hoạt ảnh đánh kéo dài 0.5 giây
                 isAttacking = false;
                 isAttacking1 = false;
             }
@@ -369,7 +369,7 @@ public class RenderingSystem {
         stateTime += delta;
 
         // Tính toán chỉ số frame hiện tại
-        int frameIndex = (int) (stateTime / 0.5f) % 5; // Mỗi frame hiển thị trong 0.1 giây
+        int frameIndex = (int) (stateTime / 0.15f) % 5; // Mỗi frame hiển thị trong 0.1 giây
         Entity entity = game.ecsEngine.playerEntity;
         //Player Position Info
         Box2DComponent box2DComponent = entity.getComponent(Box2DComponent.class);
@@ -417,7 +417,7 @@ public class RenderingSystem {
         }
 
         batch.draw(currentTexture, position.x - 1.5f * game.BaseSize, position.y - 1.5f * game.BaseSize, 3f, 3f);
-        if (stateTime >= 1.0f) { // Giả sử hoạt ảnh đánh kéo dài 0.5 giây
+        if (stateTime >= 0.6f) { // Giả sử hoạt ảnh đánh kéo dài 0.5 giây
             isAttacking = false;
             isAttacking2 = false;
         }
