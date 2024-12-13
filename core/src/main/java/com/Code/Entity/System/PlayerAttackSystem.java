@@ -19,7 +19,7 @@ public class PlayerAttackSystem extends IteratingSystem {
     float speed;
     int damage;
     float time;
-    float timeReload = 2f;
+    float timeReload = 1f;
     float timeStop;
     Vector2 direction = new Vector2(0,0);
 
@@ -60,7 +60,7 @@ public class PlayerAttackSystem extends IteratingSystem {
             direction.y -= (playerComponent.direction == DirectionType.DOWN) ? 1 : 0;
             direction.y += (playerComponent.direction == DirectionType.UP) ? 1 : 0;
             game.ecsEngine.createDamageArea(new DamageArea(position, direction,
-                game.BaseSize, game.BaseSize, damage, speed, time, 1, true));
+                game.BaseSize/2, game.BaseSize, damage, speed, time, 1, true));
 
             readyAttack1 = false;
         }
