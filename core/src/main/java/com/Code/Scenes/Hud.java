@@ -2,7 +2,6 @@ package com.Code.Scenes;
 
 import com.Code.Entity.ECSEngine;
 import com.Code.Entity.Component.PlayerComponent;
-import com.Code.Screens.EndScreen;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -14,10 +13,30 @@ public class Hud {
     private final BitmapFont font;
     private final ECSEngine ecsEngine;
 
+    // Thêm thuộc tính để hiển thị thanh máu boss
+    private float bossMaxHealth = 0;
+    private float bossCurrentHealth = 0;
+    private boolean bossHealthVisible = false;
+
     public Hud(ECSEngine ecsEngine) {
         this.ecsEngine = ecsEngine;
         this.shapeRenderer = new ShapeRenderer();
         this.font = new BitmapFont();
+    }
+
+    // Thêm phương thức để thiết lập thông tin về boss
+    public void setBossHealth(float maxHealth) {
+        this.bossMaxHealth = maxHealth;
+        this.bossCurrentHealth = maxHealth;
+        this.bossHealthVisible = true;
+    }
+
+    public void updateBossHealth(float currentHealth) {
+        this.bossCurrentHealth = currentHealth;
+    }
+
+    public void hideBossHealth() {
+        this.bossHealthVisible = false;
     }
 
     public void render(SpriteBatch spriteBatch, float screenWidth, float screenHeight) {
@@ -54,11 +73,28 @@ public class Hud {
         font.draw(spriteBatch, "HP: " + (int) currentHealth + "/" + (int) maxHealth, barX + (barWidth / 4), barY + barHeight + 15);
         spriteBatch.end();
 
-        if (currentHealth <= 0 && !(ecsEngine.getGame().getScreen() instanceof EndScreen)) {
-            ecsEngine.getGame().setScreen(new EndScreen(ecsEngine.getGame()));
+        if (currentHealth <= 0) {
+            return;
+        }
+
+        // Vẽ thanh máu boss nếu cần hiển thị
+        if (bossHealthVisible) {
+            float bossBarWidth = 300;
+            float bossBarHeight = 20;
+            float bossBarX = screenWidth / 2 - bossBarWidth / 2;
+            float bossBarY = screenHeight - 50;
+
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.setColor(Color.GRAY);
+            shapeRenderer.rect(bossBarX, bossBarY, bossBarWidth, bossBarHeight);
+
+            if (bossCurrentHealth > 0) {
+                shapeRenderer.setColor(Color.RED);
+                shapeRenderer.rect(bossBarX, bossBarY, (bossCurrentHealth / bossMaxHealth) * bossBarWidth, bossBarHeight);
+            }
+            shapeRenderer.end();
         }
     }
-
 
     public void dispose() {
         shapeRenderer.dispose();

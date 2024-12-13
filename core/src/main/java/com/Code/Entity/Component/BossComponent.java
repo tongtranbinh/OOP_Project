@@ -13,4 +13,6 @@ public class BossComponent extends EntityComponent{
     public boolean stop;
     public boolean readytoAttack;
 
+    public float maxLife = 100; // Máu tối đa
+    public float currentLife = 100; // Máu hiện tại
 }
