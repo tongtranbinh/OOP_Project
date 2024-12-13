@@ -29,10 +29,7 @@ public class PlayScreen implements Screen {
     RenderingSystem renderingSystem;
     public PlayScreen(Main game){
         this.game = game;
-
         //Create world
-
-
         Camera = new OrthographicCamera();
         viewport = new FitViewport(game.ScreenWidth * Main.PPM, game.ScreenHeight * Main.PPM, Camera);
         //Map load
@@ -40,7 +37,6 @@ public class PlayScreen implements Screen {
         mapRenderer = new OrthogonalTiledMapRenderer(mapMangager.currentMap.tiledMap, 1 * Main.PPM);
         game.world.setContactListener(new WorldContactListener(game));
         renderingSystem = new RenderingSystem(game);
-
     }
 
     @Override
