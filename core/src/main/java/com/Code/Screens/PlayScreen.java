@@ -2,6 +2,7 @@ package com.Code.Screens;
 
 import com.Code.Entity.ECSEngine;
 import com.Code.Entity.Component.BossComponent;
+import com.Code.Entity.System.RenderingSystem;
 import com.Code.Scenes.Hud;
 import com.Code.Main;
 import com.badlogic.ashley.core.Entity;
@@ -28,19 +29,21 @@ public class PlayScreen implements Screen {
     OrthogonalTiledMapRenderer mapRenderer;
 
     Box2DDebugRenderer box2DDebugRenderer = new Box2DDebugRenderer();
+    RenderingSystem renderingSystem;
 
-    private Hud hud;
+    public Hud hud;
     private Entity bossEntity;
 
     public PlayScreen(Main game) {
         this.game = game;
 
+        this.renderingSystem = game.renderingSystem;
         Camera = new OrthographicCamera();
         viewport = new FitViewport(game.ScreenWidth * Main.PPM, game.ScreenHeight * Main.PPM, Camera);
 
         mapRenderer = new OrthogonalTiledMapRenderer(game.mapMangager.currentMap.tiledMap, 1 * Main.PPM);
         hud = new Hud(game.ecsEngine, game);
-
+        renderingSystem = new RenderingSystem(game);
         // Lấy boss ngay từ đầu
         ImmutableArray<Entity> bosses = game.ecsEngine.getEntitiesFor(Family.all(BossComponent.class).get());
         if (bosses.size() > 0) {
@@ -89,10 +92,9 @@ public class PlayScreen implements Screen {
         game.ecsEngine.update(1 / 60f);
         game.ecsEngine.destroyBody();
 
-        hud.render(game.batch, game.ScreenWidth, game.ScreenHeight);
+        renderingSystem.render(1/60f);
+        hud.render( game.ScreenWidth, game.ScreenHeight);
 
-        game.batch.begin();
-        game.batch.end();
     }
 
 
@@ -118,12 +120,12 @@ public class PlayScreen implements Screen {
     }
 
     public void renderCamera() {
-        Camera.zoom = 0.5f;
+        Camera.zoom = 0.6f;
         Vector2 position = ECSEngine.box2DComponentMapper
             .get(game.mapMangager.ecsEngine.playerEntity)
             .body.getPosition();
-        Camera.position.set(position, 0);
 
+        Camera.position.set(position, 0);
         mapRenderer.setView(Camera);
         Camera.update();
     }

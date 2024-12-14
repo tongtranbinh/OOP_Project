@@ -7,6 +7,7 @@ import com.Code.Entity.ECSEngine;
 import com.Code.Main;
 import com.Code.Others.BossAnimation;
 import com.Code.Others.DirectionType;
+import com.Code.Scenes.Hud;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
@@ -52,6 +53,7 @@ public class RenderingSystem {
     Main game;
     SpriteBatch batch;
     BossAnimation bossAnimation;
+    Hud hud;
     public float Statetime = 0;
     public float playerStatetime = 0;
     public float dStatetime = 0;
