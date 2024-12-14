@@ -48,7 +48,11 @@ public class BossMovementSystem extends IteratingSystem {
 
         if (distance < 150 * Main.PPM) {
             bossCmp.readytoAttack = true;
+            System.out.println("Boss is ready to attack. Current health: " + bossCmp.currentLife);
+        } else {
+            bossCmp.readytoAttack = false;
         }
+
         if (bossCmp.readytoAttack && !bossCmp.stop) {
             Arrive<Vector2> arriveBehavior = new Arrive<>(enemySteerable, playerSteerable)
                 .setArrivalTolerance(0.1f)
@@ -81,6 +85,18 @@ public class BossMovementSystem extends IteratingSystem {
                 else bossCmp.direction = DirectionType.UP;
             }
         }
+
+        if (bossCmp.readytoAttack) {
+            // Giảm máu boss nếu đang bị tấn công (giả lập logic tấn công)
+            if (bossCmp.currentLife > 0) {
+                bossCmp.currentLife -= deltaTime * 5; // Giả lập mất máu
+                if (bossCmp.currentLife <= 0) {
+                    bossCmp.currentLife = 0;
+                    bossCmp.readytoAttack = false; // Dừng tấn công nếu boss chết
+                }
+            }
+        }
+
 
     }
 

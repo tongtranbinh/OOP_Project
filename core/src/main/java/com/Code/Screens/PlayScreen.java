@@ -6,6 +6,7 @@ import com.Code.Scenes.Hud;
 import com.Code.Main;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -14,6 +15,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.ashley.core.Entity;
+
 
 public class PlayScreen implements Screen {
 
@@ -34,7 +39,16 @@ public class PlayScreen implements Screen {
         viewport = new FitViewport(game.ScreenWidth * Main.PPM, game.ScreenHeight * Main.PPM, Camera);
 
         mapRenderer = new OrthogonalTiledMapRenderer(game.mapMangager.currentMap.tiledMap, 1 * Main.PPM);
-        hud = new Hud(game.ecsEngine);
+        hud = new Hud(game.ecsEngine, game);
+
+        // Lấy boss ngay từ đầu
+        ImmutableArray<Entity> bosses = game.ecsEngine.getEntitiesFor(Family.all(BossComponent.class).get());
+        if (bosses.size() > 0) {
+            bossEntity = bosses.first();
+            BossComponent boss = ECSEngine.bossComponentMapper.get(bossEntity);
+            hud.setBossHealth(boss.maxLife); // Set thanh máu boss
+        }
+
     }
 
     @Override
@@ -44,44 +58,31 @@ public class PlayScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        // Kiểm tra nếu boss chưa được thiết lập và đang trong map cuối
-        if (bossEntity == null) {
-            for (Entity entity : game.mapMangager.ecsEngine.getEntities()) {
-                BossComponent boss = ECSEngine.bossComponentMapper.get(entity);
-                if (boss != null) {
-                    bossEntity = entity;
-                    hud.setBossHealth(boss.maxLife); // Thiết lập thanh máu boss
-                    break;
-                }
-            }
+        if (Gdx.input.isKeyJustPressed(Keys.P)) {
+            game.setScreen(new PauseScreen(game));
+            return;
         }
 
-        // Kiểm tra trạng thái và cập nhật thanh máu boss nếu boss tồn tại
-        if (bossEntity != null) {
-            BossComponent boss = ECSEngine.bossComponentMapper.get(bossEntity);
-            if (boss != null) {
-                if (boss.readytoAttack) {
-                    hud.updateBossHealth(boss.currentLife); // Cập nhật máu boss khi đang tấn công
-                } else {
-                    hud.hideBossHealth(); // Ẩn thanh máu boss nếu không tấn công
-                }
-            }
-        }
-
-        // Dọn màn hình
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Cập nhật thế giới vật lý
-        updateWorld();
+        // Cập nhật trạng thái boss
+        if (bossEntity != null) {
+            BossComponent boss = ECSEngine.bossComponentMapper.get(bossEntity);
+            if (boss != null) {
+                if (boss.readytoAttack && boss.currentLife > 0) {
+                    hud.updateBossHealth(boss.currentLife); // Cập nhật thanh máu
+                } else {
+                    hud.hideBossHealth(); // Ẩn thanh máu nếu không cần
+                }
+            }
+        }
 
-        // Vẽ camera
+        updateWorld();
         renderCamera();
 
-        // Vẽ bản đồ
         mapRenderer.render();
 
-        // Thiết lập batch và vẽ HUD
         game.batch.setProjectionMatrix(Camera.combined);
         box2DDebugRenderer.render(game.world, Camera.combined);
 
@@ -94,25 +95,20 @@ public class PlayScreen implements Screen {
         game.batch.end();
     }
 
+
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
     }
 
     @Override
-    public void pause() {
-
-    }
+    public void pause() {}
 
     @Override
-    public void resume() {
-
-    }
+    public void resume() {}
 
     @Override
-    public void hide() {
-
-    }
+    public void hide() {}
 
     @Override
     public void dispose() {

@@ -1,25 +1,34 @@
 package com.Code.Scenes;
 
+import com.Code.Entity.Component.BossComponent;
 import com.Code.Entity.ECSEngine;
 import com.Code.Entity.Component.PlayerComponent;
+import com.Code.Main;
+import com.Code.Screens.EndScreen;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.ashley.core.Family;
+import com.badlogic.ashley.utils.ImmutableArray;
+import com.badlogic.ashley.core.Entity;
+
 
 public class Hud {
     private final ShapeRenderer shapeRenderer;
     private final BitmapFont font;
     private final ECSEngine ecsEngine;
+    private final Main game; // Thêm Main game
 
     // Thêm thuộc tính để hiển thị thanh máu boss
     private float bossMaxHealth = 0;
     private float bossCurrentHealth = 0;
     private boolean bossHealthVisible = false;
 
-    public Hud(ECSEngine ecsEngine) {
+    public Hud(ECSEngine ecsEngine, Main game) {
         this.ecsEngine = ecsEngine;
+        this.game = game;
         this.shapeRenderer = new ShapeRenderer();
         this.font = new BitmapFont();
     }
@@ -74,10 +83,11 @@ public class Hud {
         spriteBatch.end();
 
         if (currentHealth <= 0) {
+            game.setScreen(new EndScreen(game));
             return;
         }
 
-        // Vẽ thanh máu boss nếu cần hiển thị
+        // Vẽ thanh máu boss nếu bossHealthVisible = true
         if (bossHealthVisible) {
             float bossBarWidth = 300;
             float bossBarHeight = 20;
@@ -100,4 +110,5 @@ public class Hud {
         shapeRenderer.dispose();
         font.dispose();
     }
+
 }

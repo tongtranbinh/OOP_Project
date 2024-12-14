@@ -14,66 +14,60 @@ public class EndScreen implements Screen {
     private Main game;
     private SpriteBatch batch;
 
-    private Texture defeatImage; // Hình ảnh thất bại
-    private Texture restartButton; // Nút Restart
-    private Texture exitButton; // Nút Exit
-
-    private Rectangle restartRect; // Vùng của nút Restart
-    private Rectangle exitRect; // Vùng của nút Exit
+    private Texture background, logo, menuButton;
+    private Rectangle menuRect;
 
     public EndScreen(Main game) {
         this.game = game;
         batch = new SpriteBatch();
-
-        // Load hình ảnh
-        defeatImage = new Texture("assets/screens/guide.png");
-        restartButton = new Texture("assets/screens/start.png");
-        exitButton = new Texture("assets/screens/exit.png");
-
-        // Kích thước và vị trí các nút
-        float buttonWidth = 200;
-        float buttonHeight = 80;
-
-        float centerX = (game.ScreenWidth - buttonWidth) / 2f;
-        float restartY = 300; // Y vị trí nút Restart
-        float exitY = 200; // Y vị trí nút Exit
-
-        restartRect = new Rectangle(centerX, restartY, buttonWidth, buttonHeight);
-        exitRect = new Rectangle(centerX, exitY, buttonWidth, buttonHeight);
     }
 
     @Override
-    public void show() {}
+    public void show() {
+        // Load textures
+        background = new Texture(Gdx.files.internal("assets/screens/background.png"));
+        logo = new Texture(Gdx.files.internal("assets/screens/defeat.png"));
+        menuButton = new Texture(Gdx.files.internal("assets/screens/menu.png"));
+
+        int screenWidth = Gdx.graphics.getWidth();
+        int screenHeight = Gdx.graphics.getHeight();
+
+        // Nút menu nhỏ
+        int menuWidth = 140; // Chiều rộng nhỏ hơn
+        int menuHeight = 70; // Chiều cao nhỏ hơn
+        int menuX = screenWidth - menuWidth - 20; // 20px padding từ cạnh phải
+        int menuY = 20; // 20px padding từ cạnh dưới
+
+        // Tạo nút menu để phát hiện chạm
+        menuRect = new Rectangle(menuX, menuY, menuWidth, menuHeight);
+    }
 
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        int screenWidth = Gdx.graphics.getWidth();
+        int screenHeight = Gdx.graphics.getHeight();
+
+        // Logo phóng to hơn nữa
+        int logoWidth = 600; // Chiều rộng logo lớn hơn
+        int logoHeight = 400; // Chiều cao logo lớn hơn
+        int logoX = (screenWidth - logoWidth) / 2;
+        int logoY = (screenHeight - logoHeight) / 2;
+
         batch.begin();
-
-        // Hiển thị hình ảnh "Defeat"
-        float imageWidth = 400;
-        float imageHeight = 200;
-        float imageX = (game.ScreenWidth - imageWidth) / 2f;
-        float imageY = 500; // Cách cạnh trên
-        batch.draw(defeatImage, imageX, imageY, imageWidth, imageHeight);
-
-        // Vẽ các nút
-        batch.draw(restartButton, restartRect.x, restartRect.y, restartRect.width, restartRect.height);
-        batch.draw(exitButton, exitRect.x, exitRect.y, exitRect.width, exitRect.height);
-
+        batch.draw(background, 0, 0, screenWidth, screenHeight);
+        batch.draw(logo, logoX, logoY, logoWidth, logoHeight); // Phóng to logo
+        batch.draw(menuButton, menuRect.x, menuRect.y, menuRect.width, menuRect.height); // Nút menu nhỏ
         batch.end();
 
-        // Xử lý sự kiện click chuột
+        // Xử lý sự kiện chạm
         if (Gdx.input.justTouched()) {
             Vector2 touchPos = new Vector2(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY());
-            if (restartRect.contains(touchPos)) {
-                System.out.println("Restart button clicked");
-                game.setScreen(new PlayScreen(game)); // Chơi lại game
-            } else if (exitRect.contains(touchPos)) {
-                System.out.println("Exit button clicked");
-                game.setScreen(new MenuScreen(game)); // Quay lại màn hình menu
+            if (menuRect.contains(touchPos)) {
+                System.out.println("Menu button clicked");
+                game.setScreen(new MenuScreen(game)); // Chuyển sang MenuScreen
             }
         }
     }
@@ -93,8 +87,8 @@ public class EndScreen implements Screen {
     @Override
     public void dispose() {
         batch.dispose();
-        defeatImage.dispose();
-        restartButton.dispose();
-        exitButton.dispose();
+        background.dispose();
+        logo.dispose();
+        menuButton.dispose();
     }
 }
