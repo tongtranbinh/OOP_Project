@@ -83,9 +83,9 @@ public class RenderingSystem {
 
         Statetime += delta;
         batch.begin();
+        renderDamagedArea(delta);
         renderBoss(delta);
         renderEnemy(delta);
-        renderDamagedArea(delta);
         renderPlayer(delta);
         batch.end();
     }
@@ -225,11 +225,11 @@ public class RenderingSystem {
             Vector2 pos = box2DComponent.body.getPosition();
 
             Sprite bossSprite = new Sprite(bossAnimation.getframes(Statetime, bossAnimation.BossStand));
-            bossSprite.setBounds(pos.x - game.BaseSize * 3, pos.y - game.BaseSize * 3, game.BaseSize * 6, game.BaseSize * 6);
+            bossSprite.setBounds(pos.x - game.BaseSize * 3.6f, pos.y - game.BaseSize * 3.6f, game.BaseSize * 7.2f, game.BaseSize * 7.2f);
             bossSprite.draw(batch);
 
             Sprite effect = new Sprite(bossAnimation.getframes(Statetime, bossAnimation.Effect));
-            effect.setBounds(pos.x - game.BaseSize * 3, pos.y - game.BaseSize * 3, game.BaseSize * 6, game.BaseSize * 6);
+            effect.setBounds(pos.x - game.BaseSize * 4, pos.y - game.BaseSize * 4, game.BaseSize * 8, game.BaseSize * 8);
             effect.draw(batch);
 
 

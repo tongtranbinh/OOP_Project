@@ -28,7 +28,6 @@ public class Main extends Game {
     public int ScreenWidth = 1600, ScreenHeight = 900;
     public SpriteBatch batch;
     public World world;
-    public Hud hud; // thêm vào lớp Main
 
 
     public OrthographicCamera Camera;

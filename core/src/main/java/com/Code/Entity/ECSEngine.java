@@ -154,7 +154,7 @@ public class ECSEngine extends PooledEngine {
         bodyDef.position.set(location);
         box2DComponent.body = world.createBody(bodyDef);
         CircleShape circleShape = new CircleShape();
-        circleShape.setRadius(game.BaseSize * 2.5f);
+        circleShape.setRadius(game.BaseSize * 3f);
         FixtureDef fixtureDef = Main.fixtureDef;
         fixtureDef.shape = circleShape;
         box2DComponent.body.createFixture(fixtureDef).setUserData(boss);

@@ -115,6 +115,7 @@ public class Maploader {
                 final RectangleMapObject rectangleMapObject = (RectangleMapObject) object;
                 Rectangle rectangle = rectangleMapObject.getRectangle();
                 enemyPosition.add(new Vector2(rectangle.x * Main.PPM, rectangle.y * Main.PPM));
+
             }
         }
     }

@@ -3,6 +3,7 @@ package com.Code.Box2D;
 import com.Code.Entity.Component.*;
 import com.Code.Entity.ECSEngine;
 import com.Code.Main;
+import com.Code.Screens.VictoryScreen;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.physics.box2d.*;
 
@@ -133,15 +134,13 @@ public class WorldContactListener implements ContactListener {
         game.ecsEngine.EntityQueue.add(damageArea);
 
         // Trừ máu boss bằng currentLife
-        bossComponent.currentLife -= damageAreaComponent.damage;
-        if (bossComponent.currentLife < 0) bossComponent.currentLife = 0;
+        bossComponent.life -= damageAreaComponent.damage;
+        if (bossComponent.life <= 0) {
+            game.setScreen( new VictoryScreen(game));
+            return;
+        }
         bossComponent.damed = true;
 
-        // Cập nhật HUD
-        if (game.hud != null) {
-            game.hud.updateBossHealth(bossComponent.currentLife);
-            game.hud.showBossHealth();
-        }
     }
 
     void reset() {

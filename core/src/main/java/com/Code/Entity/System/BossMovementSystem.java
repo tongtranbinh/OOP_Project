@@ -48,7 +48,6 @@ public class BossMovementSystem extends IteratingSystem {
 
         if (distance < 400 * Main.PPM) {
             bossCmp.readytoAttack = true;
-            System.out.println("Boss is ready to attack. Current health: " + bossCmp.currentLife);
         } else {
             bossCmp.readytoAttack = false;
         }
