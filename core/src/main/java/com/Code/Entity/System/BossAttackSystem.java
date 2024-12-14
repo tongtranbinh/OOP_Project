@@ -38,7 +38,7 @@ public class BossAttackSystem extends IteratingSystem {
         position = box2DComponent.body.getPosition();
         bossComponent.reloadtime += deltaTime;
         bossComponent.reloadSkill += deltaTime;
-        if(bossComponent.reloadtime > 3f && bossComponent.readytoAttack && !bossComponent.stop){
+        if(bossComponent.reloadtime > 2f && bossComponent.readytoAttack && !bossComponent.stop){
             bossComponent.reloadtime = 0;
             for (int i = 0; i <= 7; i++){
                 direction = new Vector2(dirx[0][i], diry[0][i]);
@@ -46,7 +46,7 @@ public class BossAttackSystem extends IteratingSystem {
                     game.BaseSize/2, game.BaseSize/2, 10, 170 * Main.PPM, 5f,4,3, true));
             }
         }
-        if(bossComponent.reloadSkill > 5f && bossComponent.readytoAttack){
+        if(bossComponent.reloadSkill > 7f && bossComponent.readytoAttack){
             bossComponent.stop = true;
         }
 
@@ -60,12 +60,12 @@ public class BossAttackSystem extends IteratingSystem {
                     for (int i = 0; i <= 7; i++){
                         direction = new Vector2(dirx[t][i], diry[t][i]);
                         game.ecsEngine.createDamageArea(new DamageArea(position, direction,
-                            game.BaseSize/2, game.BaseSize/2, 10, 170 * Main.PPM, 5f, 4, 3, true));
+                            game.BaseSize/2, game.BaseSize/2, 15, 170 * Main.PPM, 5f, 4, 3, true));
                     }
                     bossComponent.timeCntSkill1 = 0;
                 }
 
-                if(bossComponent.timeSkill1 > 3f){
+                if(bossComponent.timeSkill1 > 2.5f){
 
                     bossComponent.stop = false;
                     bossComponent.Skill1 = false;
@@ -97,26 +97,26 @@ public class BossAttackSystem extends IteratingSystem {
                     for (int i = 0; i < 5; i++){
                         switch (bossComponent.direction){
                             case RIGHT:{
-                                direction =(new Vector2(0.5f, dir[i])) ;
+                                direction =(new Vector2(1f, dir[i])) ;
                                 break;
                             }
                             case LEFT:{
-                                direction =(new Vector2(-0.5f, dir[i])) ;
+                                direction =(new Vector2(-1f, dir[i])) ;
                                 break;
 
                             }
                             case UP:{
-                                direction = (new Vector2(dir[i], 0.5f)) ;
+                                direction = (new Vector2(dir[i], 1f)) ;
                                 break;
                             }
                             case DOWN:{
-                                direction =(new Vector2(dir[i], -0.5f));
+                                direction =(new Vector2(dir[i], -1f));
                                 break;
                             }
                         }
 
                         game.ecsEngine.createDamageArea(new DamageArea(position, direction,
-                            game.BaseSize/2, game.BaseSize/2, 10, 190 * Main.PPM, 5f, 4,3, true));
+                            game.BaseSize/2, game.BaseSize/2, 15, 190 * Main.PPM, 5f, 4,3, true));
                     }
                     bossComponent.timeCntSkill1 = 0;
                 }

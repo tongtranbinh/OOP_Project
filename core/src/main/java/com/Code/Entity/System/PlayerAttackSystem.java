@@ -62,7 +62,7 @@ public class PlayerAttackSystem extends IteratingSystem {
             direction.y -= (playerComponent.direction == DirectionType.DOWN) ? 1 : 0;
             direction.y += (playerComponent.direction == DirectionType.UP) ? 1 : 0;
             game.ecsEngine.createDamageArea(new DamageArea(position, direction,
-                game.BaseSize/2, game.BaseSize, 15, speed, 0.2f, 1,1, true));
+                game.BaseSize/2, game.BaseSize, 18, speed, 0.4f, 1,1, true));
 
             readyAttack1 = false;
         }
@@ -83,7 +83,7 @@ public class PlayerAttackSystem extends IteratingSystem {
             direction.y -= (playerComponent.direction == DirectionType.DOWN) ? 1 : 0;
             direction.y += (playerComponent.direction == DirectionType.UP) ? 1 : 0;
             game.ecsEngine.createDamageArea(new DamageArea(position, direction,
-                game.BaseSize/2, game.BaseSize, 10, speed, 2f, 1,2, true));
+                game.BaseSize/2, game.BaseSize, 10, speed, 1.5f, 1,2, true));
 
             readyAttack1 = false;
         }
@@ -112,7 +112,7 @@ public class PlayerAttackSystem extends IteratingSystem {
         if(game.keyHandler.isAttack2){
             isAttack2 = true;
             damage = 10;
-            speed = 200 * Main.PPM;
+            speed = 300 * Main.PPM;
         }
 
     }

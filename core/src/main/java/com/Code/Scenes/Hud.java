@@ -68,8 +68,6 @@ public class Hud {
         Box2DComponent box2DComponent = ECSEngine.box2DComponentMapper.get(player);
         if (playerComponent == null) return;
 
-        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(Gdx.files.internal("Font/NormalFont.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter fontParameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
 
         float currentHealth = playerComponent.life;
         float maxHealth = playerComponent.maxLife;
@@ -129,7 +127,7 @@ public class Hud {
             bossBar.setBounds(pos.x - 15, pos.y - 15, 3000 * trans,125 * trans);
             bossBar.draw(game.batch);
 
-            bossHealth.setBounds(pos.x - 14.5f, pos.y + -14.75f,bossX * trans * 3000/ 882, 81 * trans);
+            bossHealth.setBounds(pos.x - 14.5f, pos.y + -14.75f,bossX * trans * 2900/ 882, 81 * trans);
             bossHealth.draw(game.batch);
             game.batch.end();
 

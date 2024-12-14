@@ -42,7 +42,7 @@ public class PlayScreen implements Screen {
         viewport = new FitViewport(game.ScreenWidth * Main.PPM, game.ScreenHeight * Main.PPM, Camera);
 
         mapRenderer = new OrthogonalTiledMapRenderer(game.mapMangager.currentMap.tiledMap, 1 * Main.PPM);
-        game.hud = hud;
+        hud = new Hud(game.ecsEngine, game);
 
         // Load nhạc
         bgm = Gdx.audio.newMusic(Gdx.files.internal("assets/music/sound.mp3"));
@@ -78,7 +78,7 @@ public class PlayScreen implements Screen {
         mapRenderer.render();
 
         game.batch.setProjectionMatrix(Camera.combined);
-        box2DDebugRenderer.render(game.world, Camera.combined);
+        //box2DDebugRenderer.render(game.world, Camera.combined);
 
         game.ecsEngine.update(1 / 60f);
         game.ecsEngine.destroyBody();
