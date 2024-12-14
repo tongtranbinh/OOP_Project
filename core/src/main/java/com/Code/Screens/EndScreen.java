@@ -20,6 +20,7 @@ public class EndScreen implements Screen {
     public EndScreen(Main game) {
         this.game = game;
         batch = new SpriteBatch();
+
     }
 
     @Override
