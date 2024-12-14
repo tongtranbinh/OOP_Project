@@ -50,7 +50,7 @@ public class EnemyMovementSystem extends IteratingSystem {
         final Vector2 speed = new Vector2(enemyComponent.speed * 0.3f, enemyComponent.speed * 0.3f);
         if (!enemyComponent.stop) {
 
-            if ( distance < 100 * Main.PPM ) {
+            if ( distance < 300 * Main.PPM ) {
                 enemyComponent.focus = true;
                 // Đuổi theo Player
                 Box2DComponent b2dPlayer = ECSEngine.box2DComponentMapper.get(getPlayerEntity());

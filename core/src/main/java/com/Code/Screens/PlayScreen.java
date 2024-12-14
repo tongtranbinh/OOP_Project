@@ -84,7 +84,7 @@ public class PlayScreen implements Screen {
         mapRenderer.render();
 
         game.batch.setProjectionMatrix(Camera.combined);
-        box2DDebugRenderer.render(game.world, Camera.combined);
+        //box2DDebugRenderer.render(game.world, Camera.combined);
 
         game.ecsEngine.update(1 / 60f);
         game.ecsEngine.destroyBody();

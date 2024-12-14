@@ -17,7 +17,7 @@ import com.badlogic.gdx.utils.Array;
 
 import static com.Code.Main.*;
 import static com.Code.Main.MAX_STEP_TIME;
-import static com.Code.Others.DirectionType.DOWN;
+import static com.Code.Others.DirectionType.*;
 
 
 public class ECSEngine extends PooledEngine {
@@ -79,6 +79,8 @@ public class ECSEngine extends PooledEngine {
         playerComponent.speed = 150 * Main.PPM;
         playerComponent.timeAttack = 0;
         playerComponent.life = 50;
+        playerComponent.isAttacking1 = false;
+        playerComponent.isAttacking2 = false;
         playerComponent.maxLife = 50;   // Giá trị tối đa của máu
         playerComponent.startPosition = location;
         player.add(playerComponent);
@@ -119,6 +121,8 @@ public class ECSEngine extends PooledEngine {
     }
 
     public void createDamageArea(DamageArea damageArea){
+        PlayerComponent playerComponent = playerComponentMapper.get(playerEntity);
+
         final Entity damageAreaEntity = this.createEntity();
         //damage area component
 
@@ -130,6 +134,7 @@ public class ECSEngine extends PooledEngine {
         damageAreaComponent.time = damageArea.time;
         damageAreaComponent.position = damageArea.position;
         damageAreaComponent.owner = damageArea.owner;
+        damageAreaComponent.type = damageArea.type;
 
         damageAreaEntity.add(damageAreaComponent);
 
@@ -140,9 +145,18 @@ public class ECSEngine extends PooledEngine {
         bodyDef.type = BodyDef.BodyType.KinematicBody;
         bodyDef.position.set(damageArea.position);
         box2DComponent.body = world.createBody(bodyDef);
-        CircleShape circleShape = new CircleShape();
-        circleShape.setRadius(damageArea.width);
-        fixtureDef.shape = circleShape;
+        if(damageAreaComponent.type == 1) {
+            PolygonShape polygonShape = new PolygonShape();
+            if(playerComponent.direction == LEFT || playerComponent.direction == RIGHT) polygonShape.setAsBox(14 * PPM,32 * PPM);
+                else polygonShape.setAsBox(32 * PPM,14 * PPM);
+            fixtureDef.shape = polygonShape;
+        }else{
+            CircleShape circleShape = new CircleShape();
+            circleShape.setRadius(damageArea.width);
+            fixtureDef.shape = circleShape;
+        }
+
+
         fixtureDef.isSensor = true;
 
         box2DComponent.body.createFixture(fixtureDef).setUserData(damageAreaEntity);
