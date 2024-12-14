@@ -7,6 +7,7 @@ import com.Code.Entity.ECSEngine;
 import com.Code.Main;
 import com.Code.Others.BossAnimation;
 import com.Code.Others.DirectionType;
+import com.Code.Scenes.Hud;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
@@ -15,27 +16,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.Code.Others.DirectionType;
-import com.Code.Effect.DamageArea;
-import com.Code.Main;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
+
 import com.Code.Entity.Component.Box2DComponent;
 import com.Code.Entity.Component.PlayerComponent;
-import com.Code.Entity.System.PlayerAttackSystem;
-import com.Code.Entity.ECSEngine;
-import com.Code.Others.DirectionType;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.Texture;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -52,6 +36,7 @@ public class RenderingSystem {
     Main game;
     SpriteBatch batch;
     BossAnimation bossAnimation;
+    Hud hud;
     public float Statetime = 0;
     public float playerStatetime = 0;
     public float dStatetime = 0;

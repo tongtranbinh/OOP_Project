@@ -3,6 +3,7 @@ package com.Code;
 import com.Code.Box2D.WorldContactListener;
 import com.Code.Controller.KeyHandler;
 import com.Code.Entity.ECSEngine;
+import com.Code.Entity.System.RenderingSystem;
 import com.Code.Map.MapMangager;
 import com.Code.Scenes.Hud;
 import com.Code.Screens.PlayScreen;
@@ -35,15 +36,18 @@ public class Main extends Game {
     public ECSEngine ecsEngine;
     public MapMangager mapMangager;
     public WorldContactListener worldContactListener;
+    public RenderingSystem renderingSystem;
 
     private AssetManager assetManager; // AssetManager để quản lý tài nguyên
 
     public static BodyDef bodyDef = new BodyDef();
     public static FixtureDef fixtureDef = new FixtureDef();
 
+
     @Override
     public void create() {
         batch = new SpriteBatch();
+
 
         assetManager = new AssetManager(); // Khởi tạo AssetManager
 
@@ -56,6 +60,7 @@ public class Main extends Game {
         mapMangager.setMap();
         worldContactListener = new WorldContactListener(this);
         world.setContactListener(worldContactListener);
+        renderingSystem = new RenderingSystem(this);
 
         setScreen(new MenuScreen(this)); // Chuyển tới màn hình menu khi game bắt đầ
 

@@ -2,6 +2,7 @@ package com.Code.Screens;
 
 import com.Code.Entity.ECSEngine;
 import com.Code.Entity.Component.BossComponent;
+import com.Code.Entity.System.RenderingSystem;
 import com.Code.Scenes.Hud;
 import com.Code.Main;
 import com.badlogic.ashley.core.Entity;
@@ -27,33 +28,30 @@ public class PlayScreen implements Screen {
     OrthogonalTiledMapRenderer mapRenderer;
 
     Box2DDebugRenderer box2DDebugRenderer = new Box2DDebugRenderer();
+    RenderingSystem renderingSystem;
 
-    private Hud hud;
+    public Hud hud;
     private Entity bossEntity;
     private Music bgm; // Thêm biến nhạc
 
     public PlayScreen(Main game) {
         this.game = game;
 
+        this.renderingSystem = game.renderingSystem;
         Camera = new OrthographicCamera();
         viewport = new FitViewport(game.ScreenWidth * Main.PPM, game.ScreenHeight * Main.PPM, Camera);
 
         mapRenderer = new OrthogonalTiledMapRenderer(game.mapMangager.currentMap.tiledMap, 1 * Main.PPM);
-        hud = new Hud(game.ecsEngine, game);
         game.hud = hud;
 
         // Load nhạc
         bgm = Gdx.audio.newMusic(Gdx.files.internal("assets/music/sound.mp3"));
         bgm.setLooping(true); // Nhạc sẽ tự động lặp khi hết
 
-        // Lấy boss ngay từ đầu
-        ImmutableArray<Entity> bosses = game.ecsEngine.getEntitiesFor(Family.all(BossComponent.class).get());
-        if (bosses.size() > 0) {
-            bossEntity = bosses.first();
-            BossComponent boss = ECSEngine.bossComponentMapper.get(bossEntity);
-            hud.setBossHealth(boss.maxLife); // Set thông tin thanh máu boss
-            hud.hideBossHealth(); // Ẩn lúc đầu
-        }
+        renderingSystem = new RenderingSystem(game);
+
+
+
     }
 
     @Override
@@ -72,28 +70,7 @@ public class PlayScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Cập nhật trạng thái boss
-        if (bossEntity != null) {
-            BossComponent boss = ECSEngine.bossComponentMapper.get(bossEntity);
-            if (boss != null) {
-                if (boss.currentLife <= 0) {
-                    // Khi boss chết, chuyển sang màn hình Victory
-                    // Ngưng nhạc trước khi chuyển màn
-                    bgm.stop();
-                    bgm.dispose();
 
-                    game.setScreen(new VictoryScreen(game));
-                    return;
-                }
-
-                if (boss.readytoAttack && boss.currentLife > 0) {
-                    hud.showBossHealth();
-                    hud.updateBossHealth(boss.currentLife);
-                } else {
-                    hud.hideBossHealth();
-                }
-            }
-        }
 
         updateWorld();
         renderCamera();
@@ -106,10 +83,9 @@ public class PlayScreen implements Screen {
         game.ecsEngine.update(1 / 60f);
         game.ecsEngine.destroyBody();
 
-        hud.render(game.batch, game.ScreenWidth, game.ScreenHeight);
+        renderingSystem.render(1/60f);
+        hud.render( game.ScreenWidth, game.ScreenHeight);
 
-        game.batch.begin();
-        game.batch.end();
     }
 
 
@@ -142,12 +118,12 @@ public class PlayScreen implements Screen {
     }
 
     public void renderCamera() {
-        Camera.zoom = 0.5f;
+        Camera.zoom = 0.6f;
         Vector2 position = ECSEngine.box2DComponentMapper
             .get(game.mapMangager.ecsEngine.playerEntity)
             .body.getPosition();
-        Camera.position.set(position, 0);
 
+        Camera.position.set(position, 0);
         mapRenderer.setView(Camera);
         Camera.update();
     }

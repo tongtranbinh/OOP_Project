@@ -163,8 +163,10 @@ public class ECSEngine extends PooledEngine {
 
         BossComponent bossComponent = this.createComponent(BossComponent.class);
         bossComponent.speed = 25 * Main.PPM;
-        bossComponent.maxLife = 10;
-        bossComponent.currentLife = 10;
+
+        bossComponent.life = 300;
+        bossComponent.maxLife = 300;
+
         bossComponent.startPosition = location;
         bossComponent.readytoAttack = false;
         bossComponent.reloadtime = 0;
