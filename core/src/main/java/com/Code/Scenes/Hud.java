@@ -33,8 +33,8 @@ public class Hud {
     private float bossMaxHealth = 0;
     private float bossCurrentHealth = 0;
     private boolean bossHealthVisible = false;
-    private Sprite playerBar, playerHealth, playerImage;
-    private Texture texture;
+    private Sprite playerBar, playerHealth, playerImage, bossBar, bossHealth;
+    private Texture texture, textureboss;
     static float trans = 1/100f;
     RenderingSystem renderingSystem;
 
@@ -45,24 +45,18 @@ public class Hud {
         this.font = new BitmapFont();
         this.renderingSystem = game.renderingSystem;
         playerBar = new Sprite(new Texture("Boss/bar.png"));
+        bossBar = new Sprite(new Texture("Boss/BossBar.png"));
         playerImage = new Sprite(new Texture("Player/Walk/Walk Down-split/imageonline/00.png"));
         texture = new Texture("Boss/health.png");
+        textureboss = new Texture("Boss/BossHealth.png");
     }
 
     // Thêm phương thức để thiết lập thông tin về boss
     public void setBossHealth(float maxHealth) {
         this.bossMaxHealth = maxHealth;
-        this.bossCurrentHealth = maxHealth;
         this.bossHealthVisible = true;
     }
 
-    public void updateBossHealth(float currentHealth) {
-        this.bossCurrentHealth = currentHealth;
-    }
-
-    public void hideBossHealth() {
-        this.bossHealthVisible = false;
-    }
 
     public void render(float screenWidth, float screenHeight) {
         Entity player = ecsEngine.playerEntity;
@@ -111,22 +105,32 @@ public class Hud {
             return;
         }
 
-        // Vẽ thanh máu boss nếu bossHealthVisible = true
-        if (bossHealthVisible) {
-            float bossBarWidth = 300;
-            float bossBarHeight = 20;
-            float bossBarX = screenWidth / 2 - bossBarWidth / 2;
-            float bossBarY = screenHeight - 50;
-
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.setColor(Color.GRAY);
-            shapeRenderer.rect(bossBarX, bossBarY, bossBarWidth, bossBarHeight);
-
-            if (bossCurrentHealth > 0) {
-                shapeRenderer.setColor(Color.RED);
-                shapeRenderer.rect(bossBarX, bossBarY, (bossCurrentHealth / bossMaxHealth) * bossBarWidth, bossBarHeight);
+        ImmutableArray<Entity> bosses = game.ecsEngine.getEntitiesFor(Family.all(BossComponent.class).get());
+        for(Entity bossEntity : bosses) {
+            BossComponent boss = ECSEngine.bossComponentMapper.get(bossEntity);
+            if(boss.readytoAttack){
+                setBossHealth(boss.maxLife); // Set thanh máu boss
+                 bossCurrentHealth = boss.life;
             }
-            shapeRenderer.end();
+        }
+
+        // Vẽ thanh máu boss nếu bossHealthVisible = true
+        if(bossCurrentHealth <= 0) return;
+        if (bossHealthVisible) {
+
+            int bossX = (int) (882 * (bossCurrentHealth / bossMaxHealth));
+            TextureRegion tt = new TextureRegion(textureboss, 0 , 0, bossX, 81);
+            bossHealth = new Sprite(tt);
+
+            game.batch.begin();
+            bossBar.setBounds(pos.x - 15, pos.y - 15, 3000 * trans,125 * trans);
+            bossBar.draw(game.batch);
+
+            bossHealth.setBounds(pos.x - 14.5f, pos.y + -14.75f,bossX * trans * 3000/ 882, 81 * trans);
+            bossHealth.draw(game.batch);
+            game.batch.end();
+
+
         }
     }
 
