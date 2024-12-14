@@ -1,44 +1,20 @@
 package com.Code.Entity.System;
 
 
-import com.Code.Entity.Component.BossComponent;
+
+import com.Code.Entity.Component.*;
+import com.Code.Controller.KeyHandler;
 import com.Code.Entity.ECSEngine;
 import com.Code.Main;
 import com.Code.Others.BossAnimation;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
-import com.Code.Entity.Component.Box2DComponent;
-import com.Code.Entity.Component.PlayerComponent;
-import com.Code.Others.DirectionType;
-import com.Code.Effect.DamageArea;
-import com.Code.Main;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
-import com.Code.Entity.Component.Box2DComponent;
-import com.Code.Entity.Component.PlayerComponent;
-import com.Code.Entity.System.PlayerAttackSystem;
-import com.Code.Entity.ECSEngine;
-import com.Code.Others.DirectionType;
-import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
-
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.Texture;
-import java.util.ArrayList;
-
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 
@@ -52,14 +28,15 @@ public class RenderingSystem {
     SpriteBatch batch;
     BossAnimation bossAnimation;
     public float Statetime = 0;
-    int[] animationDownfixX = {15, 15, 12, 9, 6};
-    int[] animationDownfixY = {9, 15, 12, 15, 12};
-    int[] animationLeftfixX = {6, 6, 6, 9, 6};
-    int[] animationleftfixY = {6, 9, 12, 0, 0};
-    int[] animationRightfixX = {15, 15, 12, 12, 12};
-    int[] animationRightfixY = {9, 15, 12, 15, 12};
+    int[] animationDownfixX = {15, 12, 0, 0, -3};
+    int[] animationDownfixY = {12, 18, 15, 18, 15};
+    int[] animationLeftfixX = {3, 9, 12, 9, 9};
+    int[] animationLeftfixY = {6, 3, 0, 0, 0};
+    int[] animationRightfixX = {-12, -18, -15, -15, -15};
+    int[] animationRightfixY = {9, 9, 0, -3, 6};
     int[] animationUpfixX = {15, 15, 12, 9, 6};
     int[] animationUpfixY = {9, 15, 12, 15, 12};
+    KeyHandler keyHandler;
 
 
 
@@ -82,6 +59,9 @@ public class RenderingSystem {
     public ArrayList<Texture> swordLeft = new ArrayList<>();
     public ArrayList<Texture> swordRight = new ArrayList<>();
     private boolean isAttacking = false;
+    private boolean isAttacking1 = false;
+    private boolean isAttacking2 = false;
+
 
 
 
@@ -89,45 +69,29 @@ public class RenderingSystem {
         this.game = game;
         this.batch = game.batch;
         bossAnimation = new BossAnimation();
+        keyHandler = game.keyHandler;
         CreatePlayerAnimation();
-
-        loadFightAnimations();
-        loadSwordAnimations();
     }
 
     public void render(float delta){
         Statetime += delta;
         batch.begin();
         renderBoss(delta);
+
+        renderDamagedArea(delta);
+        renderEnemy(delta);
+      
         handlePlayerAttack(delta);
         if(!isAttacking) {
             renderPLayer(delta);
         }
         if(isAttacking){
-
-            renderFightAnimation(delta);
+            if(isAttacking1) renderFightAnimation(delta);
+            else renderHandAnimation(delta);
         }
-
-
-
         batch.end();
     }
-    public void loadFightAnimations() {
-        for (int i = 0; i <= 4; i++) {
-            SlashDown.add(new Texture("Player/Attack/Slash Down-Split/imageonline/" + i + "0.png"));
-            SlashUp.add(new Texture("Player/Attack/Slash Up-Split/imageonline/" + i + "0.png"));
-            SlashLeft.add(new Texture("Player/Attack/Slash Left-Split/imageonline/" + i + "0.png"));
-            SlashRight.add(new Texture("Player/Attack/Slash Right-Split/imageonline/-" + i + "0.png"));
-        }
-    }
-    public void loadSwordAnimations() {
-        for (int i = 0; i <= 4; i++) {
-            swordDown.add(new Texture("Player/Attack/Sword Down-Split/imageonline/" + i + "0.png"));
-            swordUp.add(new Texture("Player/Attack/Sword Up-Split/imageonline/" + i + "0.png"));
-            swordLeft.add(new Texture("Player/Attack/Sword Left-Split/imageonline/" + i + "0.png"));
-            swordRight.add(new Texture("Player/Attack/Sword Right-Split/imageonline/" + i + "0.png"));
-        }
-    }
+
     // Đọc các sprite (hình ảnh) của Player cho các hướng khác nhau
     public void CreatePlayerAnimation() {
         // Tải các sprite cho hướng "Down"
@@ -157,10 +121,6 @@ public class RenderingSystem {
             Texture sprite = new Texture(path);
             left.add(sprite);
         }
-        idleDown.add(new Texture("Player/Walk/Walk Down-split/imageonline/00.png"));
-        idleUp.add(new Texture("Player/Walk/Walk Up-split/imageonline/00.png"));
-        idleLeft.add(new Texture("Player/Walk/Walk Left-split/imageonline/00.png"));
-        idleRight.add(new Texture("Player/Walk/Walk Right-split/imageonline/00.png"));
     }
 
     // Render Player với animation và cập nhật frame theo delta time
@@ -171,10 +131,10 @@ public class RenderingSystem {
         PlayerComponent playerComponent = ECSEngine.playerComponentMapper.get(entity);
         Box2DComponent box2DComponent = entity.getComponent(Box2DComponent.class);
         Vector2 position = box2DComponent.body.getPosition();
-        if (!Gdx.input.isKeyPressed(Input.Keys.W) &&
-            !Gdx.input.isKeyPressed(Input.Keys.S) &&
-            !Gdx.input.isKeyPressed(Input.Keys.A) &&
-            !Gdx.input.isKeyPressed(Input.Keys.D)) {
+        if (!keyHandler.up &&
+            !keyHandler.down &&
+            !keyHandler.left &&
+            !keyHandler.right) {
             // Cập nhật thời gian để điều chỉnh frame của animation
             stateTime += delta;  // Cộng deltaTime vào stateTime để tạo chuyển động mượt mà
 
@@ -227,14 +187,14 @@ public class RenderingSystem {
     }
     public void handlePlayerAttack(float delta) {
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.J) && !isAttacking) {
+        if ((keyHandler.isAttack1 || keyHandler.isAttack2)  && !isAttacking) {
+            if(keyHandler.isAttack1) isAttacking1 = true;
+            else isAttacking2 = true;
             isAttacking = true;
             stateTime = 0f; // Reset stateTime khi bắt đầu đánh
         }
 
-        if (isAttacking) {
-            renderFightAnimation(delta);
-        }
+
     }
 
     public void renderFightAnimation(float delta) {
@@ -243,10 +203,11 @@ public class RenderingSystem {
             return;
         }
         // Cập nhật thời gian để điều chỉnh frame của animation
-        stateTime += delta;
+        stateTime += delta;  // Cộng deltaTime vào stateTime để tạo chuyển động mượt mà
 
         // Tính toán chỉ số frame hiện tại
-        int frameIndex = (int) (stateTime / 0.5f) % 5; // Mỗi frame hiển thị trong 0.1 giây
+        int frameIndex = (int) (stateTime / 0.15f) % 5; // Mỗi frame hiển thị trong 0.1 giây
+
         Entity entity = game.ecsEngine.playerEntity;
             //Player Position Info
             Box2DComponent box2DComponent = entity.getComponent(Box2DComponent.class);
@@ -303,10 +264,12 @@ public class RenderingSystem {
                     currentTexture = SlashRight.get(frameIndex);
                     break;
             }
+            System.out.println(frameIndex);
 
             batch.draw(currentTexture, position.x - 1.5f * game.BaseSize, position.y - 1.5f * game.BaseSize, 3f, 3f);
-            if (stateTime >= 2.0f) { // Giả sử hoạt ảnh đánh kéo dài 0.5 giây
+            if (stateTime >= 0.6f) { // Giả sử hoạt ảnh đánh kéo dài 0.5 giây
                 isAttacking = false;
+                isAttacking1 = false;
             }
 
             // Vẽ hoạt ảnh kiếm
@@ -336,16 +299,16 @@ public class RenderingSystem {
                         case LEFT:
 
                                 batch.draw(currentTexture,
-                                    position.x - 1.5f * game.BaseSize -1.0f, // Vẽ lệch trái một chút
-                                    position.y - 1.5f * game.BaseSize, // Giữ nguyên vị trí Y
+                                    position.x - 1.5f * game.BaseSize - animationLeftfixX[frameIndex] * Main.PPM, // Vẽ lệch trái một chút
+                                    position.y - 1.5f * game.BaseSize - animationLeftfixY[frameIndex] * Main.PPM, // Giữ nguyên vị trí Y
                                     3f, 3f);
 
                             break;
                         case RIGHT:
                             batch.draw(
                                 currentTexture,
-                                position.x - 1.5f * game.BaseSize , // Vẽ lệch phải một chút
-                                position.y - 1.5f * game.BaseSize , // Giữ nguyên vị trí Y
+                                position.x - 1.5f * game.BaseSize - animationRightfixX[frameIndex] * Main.PPM, // Vẽ lệch phải một chút
+                                position.y - 1.5f * game.BaseSize - animationRightfixY[frameIndex] * Main.PPM, // Giữ nguyên vị trí Y
                                 3f, 3f
                             );
                             break;
@@ -354,10 +317,75 @@ public class RenderingSystem {
 
         }
 
-    }
 
+        batch.draw(currentTexture, position.x - game.BaseSize * 1.5f , position.y - game.BaseSize * 1.5f, game.BaseSize * 3 , game.BaseSize * 3);
+    }
+    public void renderHandAnimation(float delta) {
+
+        if (!isAttacking) {
+            return;
+        }
+        // Cập nhật thời gian để điều chỉnh frame của animation
+        stateTime += delta;
+
+        // Tính toán chỉ số frame hiện tại
+        int frameIndex = (int) (stateTime / 0.15f) % 5; // Mỗi frame hiển thị trong 0.1 giây
+        Entity entity = game.ecsEngine.playerEntity;
+        //Player Position Info
+        Box2DComponent box2DComponent = entity.getComponent(Box2DComponent.class);
+        Vector2 position = box2DComponent.body.getPosition();
+        // Lấy frame hiện tại dựa trên hướng và loại hoạt ảnh
+        PlayerComponent playerComponent = game.ecsEngine.playerComponentMapper.get(entity);
+
+
+        switch (playerComponent.direction) {
+            case DOWN:
+
+                currentTexture = swordDown.get(frameIndex);
+
+                break;
+            case UP:
+
+                currentTexture = swordUp.get(frameIndex);
+
+                break;
+            case LEFT:
+
+                currentTexture = swordLeft.get(frameIndex);
+                break;
+            case RIGHT:
+
+                currentTexture = swordRight.get(frameIndex);
+                break;
+        }
+
+
+
+        switch (playerComponent.direction) {
+            case DOWN:
+                currentTexture = SlashDown.get(frameIndex);
+                break;
+            case UP:
+                currentTexture = SlashUp.get(frameIndex);
+                break;
+            case LEFT:
+                currentTexture = SlashLeft.get(frameIndex);
+                break;
+            case RIGHT:
+                currentTexture = SlashRight.get(frameIndex);
+                break;
+        }
+
+        batch.draw(currentTexture, position.x - 1.5f * game.BaseSize, position.y - 1.5f * game.BaseSize, 3f, 3f);
+        if (stateTime >= 0.6f) { // Giả sử hoạt ảnh đánh kéo dài 0.5 giây
+            isAttacking = false;
+            isAttacking2 = false;
+        }
+    }
     public void renderBoss(float delta){
-        for(Entity entity : game.ecsEngine.BossEntityArray){
+        Family family = Family.all(BossComponent.class).get();
+        ImmutableArray<Entity> entities = game.ecsEngine.getEntitiesFor(family);
+        for(Entity entity : entities){
             BossComponent bossComponent = ECSEngine.bossComponentMapper.get(entity);
             Box2DComponent box2DComponent = ECSEngine.box2DComponentMapper.get(entity);
             Vector2 pos = box2DComponent.body.getPosition();
@@ -372,9 +400,34 @@ public class RenderingSystem {
 
 
         }
-
     }
 
+    public void renderDamagedArea(float delta){
+        Family family = Family.all(DamageAreaComponent.class).get();
+        ImmutableArray<Entity> entities = game.ecsEngine.getEntitiesFor(family);
+        for(Entity entity : entities){
+            Box2DComponent box2DComponent = ECSEngine.box2DComponentMapper.get(entity);
+            DamageAreaComponent damageAreaComponent = ECSEngine.damageAreaComponentMapper.get(entity);
+            Vector2 pos = box2DComponent.body.getPosition();
+            Sprite bullets;
+            if(damageAreaComponent.owner == 4)  bullets = new Sprite(bossAnimation.getframes(Statetime, bossAnimation.Bullets));
+            else bullets = new Sprite(bossAnimation.getframes(Statetime, bossAnimation.PlayerBullets));
+            bullets.setBounds(pos.x - game.BaseSize * 0.75f, pos.y - game.BaseSize * 0.75f, game.BaseSize * 1.5f, game.BaseSize * 1.5f);
+            bullets.draw(batch);
+        }
+    }
+
+    public void renderEnemy(float delta) {
+        Family family = Family.all(EnemyComponent.class).get();
+        ImmutableArray<Entity> entities = game.ecsEngine.getEntitiesFor(family);
+        for (Entity entity : entities) {
+            Box2DComponent box2DComponent = ECSEngine.box2DComponentMapper.get(entity);
+            Vector2 pos = box2DComponent.body.getPosition();
+            Sprite enemy = new Sprite(bossAnimation.getframes(Statetime, bossAnimation.Enemy));;
+            enemy.setBounds(pos.x - game.BaseSize * 1.5f, pos.y - game.BaseSize * 1.5f, game.BaseSize * 3f, game.BaseSize * 3f);
+            enemy.draw(batch);
+        }
+    }
     public void dispose() {
         for (Texture texture : down) {
             texture.dispose();
@@ -390,3 +443,4 @@ public class RenderingSystem {
         }
     }
 }
+

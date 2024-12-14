@@ -81,7 +81,7 @@ public class PlayerAttackSystem extends IteratingSystem {
             isAttack1 = true;
             damage = 10;
             speed = 200 * Main.PPM;
-            time = 4f;
+            time = 2f;
         }
 
     }
