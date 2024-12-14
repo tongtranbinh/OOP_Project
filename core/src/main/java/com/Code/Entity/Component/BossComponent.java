@@ -1,6 +1,6 @@
 package com.Code.Entity.Component;
 
-public class BossComponent extends EntityComponent{
+public class BossComponent extends EntityComponent {
     public boolean Skill1;
     public boolean Skill2;
     public boolean Attack;
@@ -14,6 +14,8 @@ public class BossComponent extends EntityComponent{
     public boolean readytoAttack;
     public boolean damed;
 
+
     public float maxLife ; // Máu tối đa
     public float currentLife ; // Máu hiện tại
+
 }

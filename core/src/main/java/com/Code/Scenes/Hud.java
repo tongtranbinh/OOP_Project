@@ -10,6 +10,7 @@ import com.Code.Screens.EndScreen;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -22,14 +23,12 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.math.Vector2;
 
-
 public class Hud {
     private final ShapeRenderer shapeRenderer;
     private final BitmapFont font;
     private final ECSEngine ecsEngine;
-    private final Main game; // Thêm Main game
+    private final Main game;
 
-    // Thêm thuộc tính để hiển thị thanh máu boss
     private float bossMaxHealth = 0;
     private float bossCurrentHealth = 0;
     private boolean bossHealthVisible = false;
@@ -38,11 +37,15 @@ public class Hud {
     static float trans = 1/100f;
     RenderingSystem renderingSystem;
 
+    private OrthographicCamera hudCamera;
+
     public Hud(ECSEngine ecsEngine, Main game) {
         this.ecsEngine = ecsEngine;
         this.game = game;
         this.shapeRenderer = new ShapeRenderer();
         this.font = new BitmapFont();
+        this.bossHealthVisible = false;
+        this.hudCamera = new OrthographicCamera();
         this.renderingSystem = game.renderingSystem;
         playerBar = new Sprite(new Texture("Boss/bar.png"));
         bossBar = new Sprite(new Texture("Boss/BossBar.png"));
@@ -51,7 +54,6 @@ public class Hud {
         textureboss = new Texture("Boss/BossHealth.png");
     }
 
-    // Thêm phương thức để thiết lập thông tin về boss
     public void setBossHealth(float maxHealth) {
         this.bossMaxHealth = maxHealth;
         this.bossHealthVisible = true;
@@ -104,6 +106,7 @@ public class Hud {
             game.setScreen(new EndScreen(game));
             return;
         }
+
 
         ImmutableArray<Entity> bosses = game.ecsEngine.getEntitiesFor(Family.all(BossComponent.class).get());
         for(Entity bossEntity : bosses) {
