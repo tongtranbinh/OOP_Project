@@ -44,13 +44,8 @@ public class PlayScreen implements Screen {
         mapRenderer = new OrthogonalTiledMapRenderer(game.mapMangager.currentMap.tiledMap, 1 * Main.PPM);
         hud = new Hud(game.ecsEngine, game);
         renderingSystem = new RenderingSystem(game);
-        // Lấy boss ngay từ đầu
-        ImmutableArray<Entity> bosses = game.ecsEngine.getEntitiesFor(Family.all(BossComponent.class).get());
-        if (bosses.size() > 0) {
-            bossEntity = bosses.first();
-            BossComponent boss = ECSEngine.bossComponentMapper.get(bossEntity);
-            hud.setBossHealth(boss.maxLife); // Set thanh máu boss
-        }
+
+
 
     }
 
@@ -69,17 +64,6 @@ public class PlayScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Cập nhật trạng thái boss
-        if (bossEntity != null) {
-            BossComponent boss = ECSEngine.bossComponentMapper.get(bossEntity);
-            if (boss != null) {
-                if (boss.readytoAttack && boss.currentLife > 0) {
-                    hud.updateBossHealth(boss.currentLife); // Cập nhật thanh máu
-                } else {
-                    hud.hideBossHealth(); // Ẩn thanh máu nếu không cần
-                }
-            }
-        }
 
         updateWorld();
         renderCamera();
