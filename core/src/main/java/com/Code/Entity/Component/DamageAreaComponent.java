@@ -14,6 +14,7 @@ public class DamageAreaComponent implements Component, Pool.Poolable {
     public float time;
     public Vector2 direction;
     public int owner;
+    public int type;
     // ID = 0 1 2 3 4
     // wall = 0; player = 1;  enemy = 2; damagearea = 3; boss = 4;
 

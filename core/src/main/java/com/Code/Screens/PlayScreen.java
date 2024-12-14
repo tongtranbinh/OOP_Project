@@ -67,7 +67,7 @@ public class PlayScreen implements Screen {
 
 
         game.batch.setProjectionMatrix(Camera.combined);
-        box2DDebugRenderer.render(game.world, Camera.combined);
+        //box2DDebugRenderer.render(game.world, Camera.combined);
 
         game.ecsEngine.update(1 / 60f);
         game.ecsEngine.destroyBody();
@@ -111,7 +111,7 @@ public class PlayScreen implements Screen {
 
 
     public void renderCamera(){
-        Camera.zoom = 0.2f;
+        Camera.zoom = 0.6f;
         Vector2 position = ECSEngine.box2DComponentMapper.get(game.mapMangager.ecsEngine.playerEntity).body.getPosition();
         Camera.position.set(position,0);
 

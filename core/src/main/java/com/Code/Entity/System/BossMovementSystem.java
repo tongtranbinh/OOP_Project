@@ -46,7 +46,7 @@ public class BossMovementSystem extends IteratingSystem {
         SteerableAgent enemySteerable = new SteerableAgent(box2DComponent.body, 1.5f);
         SteerableAgent playerSteerable = new SteerableAgent(b2dPlayer.body, 1.5f);
 
-        if (distance < 150 * Main.PPM) {
+        if (distance < 400 * Main.PPM) {
             bossCmp.readytoAttack = true;
         }
         if (bossCmp.readytoAttack && !bossCmp.stop) {

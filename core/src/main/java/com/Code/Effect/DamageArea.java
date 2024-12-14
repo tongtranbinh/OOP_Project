@@ -10,11 +10,11 @@ public class DamageArea {
     public int damage;
     public int owner;
     public float speed;
-
+    public int type;
     public float time;
     public float width;
     public float height;
-    public DamageArea(Vector2 position, Vector2 direction, float width, float height, int damage, float speed, float time, int owner, boolean isAttack) {
+    public DamageArea(Vector2 position, Vector2 direction, float width, float height, int damage, float speed, float time, int owner,int type, boolean isAttack) {
         this.position = position;
         this.direction = direction;
         this.width = width;
@@ -24,5 +24,6 @@ public class DamageArea {
         this.time = time;
         this.isAttack = isAttack;
         this.owner = owner;
+        this.type = type;
     }
 }

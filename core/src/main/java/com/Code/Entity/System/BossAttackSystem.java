@@ -43,7 +43,7 @@ public class BossAttackSystem extends IteratingSystem {
             for (int i = 0; i <= 7; i++){
                 direction = new Vector2(dirx[0][i], diry[0][i]);
                 game.ecsEngine.createDamageArea(new DamageArea(position, direction,
-                    game.BaseSize/2, game.BaseSize/2, 10, 170 * Main.PPM, 5f,4, true));
+                    game.BaseSize/2, game.BaseSize/2, 10, 170 * Main.PPM, 5f,4,3, true));
             }
         }
         if(bossComponent.reloadSkill > 5f && bossComponent.readytoAttack){
@@ -60,7 +60,7 @@ public class BossAttackSystem extends IteratingSystem {
                     for (int i = 0; i <= 7; i++){
                         direction = new Vector2(dirx[t][i], diry[t][i]);
                         game.ecsEngine.createDamageArea(new DamageArea(position, direction,
-                            game.BaseSize/2, game.BaseSize/2, 10, 170 * Main.PPM, 5f, 4, true));
+                            game.BaseSize/2, game.BaseSize/2, 10, 170 * Main.PPM, 5f, 4, 3, true));
                     }
                     bossComponent.timeCntSkill1 = 0;
                 }
@@ -116,7 +116,7 @@ public class BossAttackSystem extends IteratingSystem {
                         }
 
                         game.ecsEngine.createDamageArea(new DamageArea(position, direction,
-                            game.BaseSize/2, game.BaseSize/2, 10, 190 * Main.PPM, 5f, 4, true));
+                            game.BaseSize/2, game.BaseSize/2, 10, 190 * Main.PPM, 5f, 4,3, true));
                     }
                     bossComponent.timeCntSkill1 = 0;
                 }
