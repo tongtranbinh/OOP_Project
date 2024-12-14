@@ -7,6 +7,7 @@ import com.Code.Main;
 import com.Code.Screens.EndScreen;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -14,26 +15,27 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.ashley.core.Entity;
 
-
 public class Hud {
     private final ShapeRenderer shapeRenderer;
     private final BitmapFont font;
     private final ECSEngine ecsEngine;
-    private final Main game; // Thêm Main game
+    private final Main game;
 
-    // Thêm thuộc tính để hiển thị thanh máu boss
     private float bossMaxHealth = 0;
     private float bossCurrentHealth = 0;
     private boolean bossHealthVisible = false;
+
+    private OrthographicCamera hudCamera;
 
     public Hud(ECSEngine ecsEngine, Main game) {
         this.ecsEngine = ecsEngine;
         this.game = game;
         this.shapeRenderer = new ShapeRenderer();
         this.font = new BitmapFont();
+        this.bossHealthVisible = false;
+        this.hudCamera = new OrthographicCamera();
     }
 
-    // Thêm phương thức để thiết lập thông tin về boss
     public void setBossHealth(float maxHealth) {
         this.bossMaxHealth = maxHealth;
         this.bossCurrentHealth = maxHealth;
@@ -41,14 +43,29 @@ public class Hud {
     }
 
     public void updateBossHealth(float currentHealth) {
-        this.bossCurrentHealth = currentHealth;
+        this.bossCurrentHealth = Math.max(0, Math.min(currentHealth, bossMaxHealth));
+        if (this.bossCurrentHealth > 0) {
+            this.showBossHealth();
+        } else {
+            this.hideBossHealth();
+        }
     }
 
     public void hideBossHealth() {
         this.bossHealthVisible = false;
     }
 
+    public void showBossHealth() {
+        this.bossHealthVisible = true;
+    }
+
     public void render(SpriteBatch spriteBatch, float screenWidth, float screenHeight) {
+        hudCamera.setToOrtho(false, screenWidth, screenHeight);
+        hudCamera.update();
+
+        shapeRenderer.setProjectionMatrix(hudCamera.combined);
+        spriteBatch.setProjectionMatrix(hudCamera.combined);
+
         Entity player = ecsEngine.playerEntity;
         if (player == null) return;
 
@@ -87,7 +104,6 @@ public class Hud {
             return;
         }
 
-        // Vẽ thanh máu boss nếu bossHealthVisible = true
         if (bossHealthVisible) {
             float bossBarWidth = 300;
             float bossBarHeight = 20;
@@ -103,6 +119,10 @@ public class Hud {
                 shapeRenderer.rect(bossBarX, bossBarY, (bossCurrentHealth / bossMaxHealth) * bossBarWidth, bossBarHeight);
             }
             shapeRenderer.end();
+
+            if (bossCurrentHealth <= 0) {
+                hideBossHealth();
+            }
         }
     }
 

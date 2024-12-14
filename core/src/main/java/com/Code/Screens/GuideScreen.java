@@ -19,11 +19,13 @@ public class GuideScreen implements Screen {
     private Rectangle backRect;
     private BitmapFont font;
 
+    // Chỉ sửa nội dung guideText
     private String guideText = "Welcome to the Guide!\n\n" +
-        "1. **Movement**: Use WASD to move your character smoothly across the map.\n" +
-        "2. **Shoot**: Press 'J' to fire your weapon at enemies.\n" +
-        "3. **Pause**: Press 'P' to pause the game and access options.\n" +
-        "4. **Goal**: Defeat enemies, level up, and face the ultimate boss to claim victory!\n\n" +
+        "1. **Movement**: Use WASD to move your character.\n" +
+        "2. **Close Attack**: Press 'J' to perform a close-range attack.\n" +
+        "3. **Ranged Attack**: Press 'K' to fire a ranged weapon.\n" +
+        "4. **Pause**: Press 'P' to pause the game.\n" +
+        "5. **Goal**: Defeat enemies, level up, and face the ultimate boss to claim victory!\n\n" +
         "Tips:\n" +
         "- Explore every corner to find hidden treasures.\n" +
         "- Upgrade your abilities by defeating monsters.\n" +
@@ -33,26 +35,24 @@ public class GuideScreen implements Screen {
         this.game = game;
         this.batch = new SpriteBatch();
         this.font = new BitmapFont();
-        font.getData().setScale(1.4f); // Giảm kích cỡ font một chút
-        font.setColor(Color.GOLD); // Màu chữ vàng
+        font.getData().setScale(1.4f);
+        font.setColor(Color.GOLD);
     }
 
     @Override
     public void show() {
-        // Load textures
         background = new Texture(Gdx.files.internal("screens/background.png"));
         logo = new Texture(Gdx.files.internal("screens/logo.png"));
         backButtonTexture = new Texture(Gdx.files.internal("screens/back.png"));
 
-        // Set positions for the back button
-        int buttonWidth = 100; // Giảm kích cỡ nút
+        int buttonWidth = 100;
         int buttonHeight = 50;
         int screenWidth = Gdx.graphics.getWidth();
         int screenHeight = Gdx.graphics.getHeight();
 
         backRect = new Rectangle(
             (screenWidth - buttonWidth) / 2,
-            50, // Position near the bottom of the screen
+            50,
             buttonWidth,
             buttonHeight
         );
@@ -60,43 +60,35 @@ public class GuideScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        // Clear the screen
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Draw background and logo
         batch.begin();
         batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.draw(logo, (Gdx.graphics.getWidth() - 400) / 2, Gdx.graphics.getHeight() - 150, 400, 100);
 
-        // Draw the guide text, shifted slightly to the right
-        float textWidth = 1000; // Adjust width for the text area
-        float textX = (Gdx.graphics.getWidth() - textWidth) / 2 + 120; // Dịch sang phải
-        float textY = Gdx.graphics.getHeight() / 2 + 150; // Adjust vertical position
+        float textWidth = 1000;
+        float textX = (Gdx.graphics.getWidth() - textWidth) / 2 + 120;
+        float textY = Gdx.graphics.getHeight() / 2 + 150;
         font.draw(batch, guideText, textX, textY, textWidth, -1, true);
 
-        // Draw the back button
         batch.draw(backButtonTexture, backRect.x, backRect.y, backRect.width, backRect.height);
         batch.end();
 
-        // Handle input for the back button
         if (Gdx.input.justTouched()) {
             Vector2 touchPos = new Vector2(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY());
             if (backRect.contains(touchPos)) {
-                game.setScreen(new MenuScreen(game)); // Return to the menu screen
+                game.setScreen(new MenuScreen(game));
             }
         }
     }
 
     @Override
     public void resize(int width, int height) {}
-
     @Override
     public void pause() {}
-
     @Override
     public void resume() {}
-
     @Override
     public void hide() {}
 

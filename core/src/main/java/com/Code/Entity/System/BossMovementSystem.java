@@ -86,16 +86,16 @@ public class BossMovementSystem extends IteratingSystem {
             }
         }
 
-        if (bossCmp.readytoAttack) {
-            // Giảm máu boss nếu đang bị tấn công (giả lập logic tấn công)
-            if (bossCmp.currentLife > 0) {
-                bossCmp.currentLife -= deltaTime * 5; // Giả lập mất máu
-                if (bossCmp.currentLife <= 0) {
-                    bossCmp.currentLife = 0;
-                    bossCmp.readytoAttack = false; // Dừng tấn công nếu boss chết
-                }
-            }
-        }
+//        if (bossCmp.readytoAttack) {
+//            // Giảm máu boss nếu đang bị tấn công (giả lập logic tấn công)
+//            if (bossCmp.currentLife > 0) {
+//                bossCmp.currentLife -= deltaTime * 5; // Giả lập mất máu
+//                if (bossCmp.currentLife <= 0) {
+//                    bossCmp.currentLife = 0;
+//                    bossCmp.readytoAttack = false; // Dừng tấn công nếu boss chết
+//                }
+//            }
+//        }
 
 
     }

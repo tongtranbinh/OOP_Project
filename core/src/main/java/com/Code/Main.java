@@ -4,6 +4,7 @@ import com.Code.Box2D.WorldContactListener;
 import com.Code.Controller.KeyHandler;
 import com.Code.Entity.ECSEngine;
 import com.Code.Map.MapMangager;
+import com.Code.Scenes.Hud;
 import com.Code.Screens.PlayScreen;
 import com.Code.Screens.MenuScreen;
 import com.badlogic.gdx.Game;
@@ -26,6 +27,8 @@ public class Main extends Game {
     public int ScreenWidth = 1600, ScreenHeight = 900;
     public SpriteBatch batch;
     public World world;
+    public Hud hud; // thêm vào lớp Main
+
 
     public OrthographicCamera Camera;
     public KeyHandler keyHandler;

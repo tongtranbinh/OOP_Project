@@ -8,6 +8,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -17,8 +18,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.utils.ImmutableArray;
-import com.badlogic.ashley.core.Entity;
-
 
 public class PlayScreen implements Screen {
 
@@ -31,6 +30,7 @@ public class PlayScreen implements Screen {
 
     private Hud hud;
     private Entity bossEntity;
+    private Music bgm; // Thêm biến nhạc
 
     public PlayScreen(Main game) {
         this.game = game;
@@ -40,20 +40,26 @@ public class PlayScreen implements Screen {
 
         mapRenderer = new OrthogonalTiledMapRenderer(game.mapMangager.currentMap.tiledMap, 1 * Main.PPM);
         hud = new Hud(game.ecsEngine, game);
+        game.hud = hud;
+
+        // Load nhạc
+        bgm = Gdx.audio.newMusic(Gdx.files.internal("assets/music/sound.mp3"));
+        bgm.setLooping(true); // Nhạc sẽ tự động lặp khi hết
 
         // Lấy boss ngay từ đầu
         ImmutableArray<Entity> bosses = game.ecsEngine.getEntitiesFor(Family.all(BossComponent.class).get());
         if (bosses.size() > 0) {
             bossEntity = bosses.first();
             BossComponent boss = ECSEngine.bossComponentMapper.get(bossEntity);
-            hud.setBossHealth(boss.maxLife); // Set thanh máu boss
+            hud.setBossHealth(boss.maxLife); // Set thông tin thanh máu boss
+            hud.hideBossHealth(); // Ẩn lúc đầu
         }
-
     }
 
     @Override
     public void show() {
         Gdx.input.setInputProcessor(game.keyHandler);
+        bgm.play(); // Bắt đầu phát nhạc khi vào màn chơi
     }
 
     @Override
@@ -70,10 +76,21 @@ public class PlayScreen implements Screen {
         if (bossEntity != null) {
             BossComponent boss = ECSEngine.bossComponentMapper.get(bossEntity);
             if (boss != null) {
+                if (boss.currentLife <= 0) {
+                    // Khi boss chết, chuyển sang màn hình Victory
+                    // Ngưng nhạc trước khi chuyển màn
+                    bgm.stop();
+                    bgm.dispose();
+
+                    game.setScreen(new VictoryScreen(game));
+                    return;
+                }
+
                 if (boss.readytoAttack && boss.currentLife > 0) {
-                    hud.updateBossHealth(boss.currentLife); // Cập nhật thanh máu
+                    hud.showBossHealth();
+                    hud.updateBossHealth(boss.currentLife);
                 } else {
-                    hud.hideBossHealth(); // Ẩn thanh máu nếu không cần
+                    hud.hideBossHealth();
                 }
             }
         }
@@ -84,7 +101,7 @@ public class PlayScreen implements Screen {
         mapRenderer.render();
 
         game.batch.setProjectionMatrix(Camera.combined);
-        //box2DDebugRenderer.render(game.world, Camera.combined);
+        box2DDebugRenderer.render(game.world, Camera.combined);
 
         game.ecsEngine.update(1 / 60f);
         game.ecsEngine.destroyBody();
@@ -108,10 +125,17 @@ public class PlayScreen implements Screen {
     public void resume() {}
 
     @Override
-    public void hide() {}
+    public void hide() {
+        // Không dừng nhạc ở đây,
+        // nếu bạn muốn nhạc dừng khi chuyển ra menu khác, dừng tại chỗ setScreen sang MenuScreen
+    }
 
     @Override
     public void dispose() {
+        // Dừng và giải phóng nhạc khi màn chơi dispose
+        bgm.stop();
+        bgm.dispose();
+
         game.world.dispose();
         box2DDebugRenderer.dispose();
         hud.dispose();
