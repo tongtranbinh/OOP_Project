@@ -3,114 +3,133 @@ package com.Code.Screens;
 import com.Code.Main;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 
 public class StoryScreen implements Screen {
 
     private Main game;
     private SpriteBatch batch;
+    private Texture background, logo, backButtonTexture, nextButtonTexture;
+    private Rectangle backRect, nextRect;
     private BitmapFont font;
-    private Stage stage;
-    private Skin skin;
-    private TextButton backButton;
 
-    private String[] storyParts;  // Cốt truyện được chia thành các đoạn
-    private int currentPart;      // Chỉ số đoạn hiện tại
+    private String[] storyParts;  // Story split into parts
+    private int currentPart;      // Current part index
 
     public StoryScreen(Main game) {
         this.game = game;
         this.batch = new SpriteBatch();
         this.font = new BitmapFont();
-        // Tạo mảng storyParts để chia cốt truyện thành từng phần
+        font.getData().setScale(1.4f); // Adjust font size
+        font.setColor(Color.GOLD); // Set font color
+
+        // Initialize story parts
         this.storyParts = new String[] {
-            "Bổ sung vào dòng thời gian phụ:\n" +
-                "Nơi mà Crimson Moon ngủ đông hình thành nên một khu rừng máu và sinh lực của vị thần này tạo nên, được đặt theo đúng tên của vị thần này (Crimson Moon). " +
-                "Ở khắp trong khu rừng là những loài động vật bị máu của Vị Cổ Thần làm cho điên loạn, khiến khu vực này trở nên vô cùng nguy hiểm, nhưng cũng là nơi duy nhất mà các tổ chức có thể " +
-                "tìm hiểu về các vị thần. HUST gọi khu vực này là X-37 (?).\n" +
+            "Adding to the alternate timeline:\n" +
+                "Crimson Moon, a dormant ancient god, created a forest filled with blood and vitality, named after itself (Crimson Moon). " +
+                "Within this forest, animals have been driven mad by the god's blood, making the area extremely dangerous but also the only place where organizations can study the gods. HUST refers to this area as X-37.\n" +
                 "\n" +
-                "Sau khi cuộc chiến của con người và vị thần diễn ra, một vị Cổ Thần khác – The Elder God of Death (Vị cổ thần của cái chết) bí mật tới Earth – 2407 " +
-                "với mục tiêu đoạt lấy sức mạnh của Crimson Moon, nhằm tạo ra một đội quân Undead kết hợp với máu của vị Cổ Thần này, tiêu diệt toàn bộ nhân loại và tạo ra các thế giới chỉ bao gồm các vị thần.",
+                "After humanity's battle with a god, another Elder God – The Elder God of Death – secretly arrives on Earth-2407 with the intention of stealing Crimson Moon's power. " +
+                "The Elder God seeks to create an army of Undead infused with the blood of the Crimson Moon, aiming to eradicate humanity and establish worlds ruled solely by gods.",
 
-            "Vào dòng thời gian chính:\nNhân vật chính (tên người chơi nhập) - Học giả tại tổ chức HUST, đồng thời là chiến binh xuất sắc nhất, dưới sự hướng dẫn của Master William, " +
-                "được chọn ra để nghiên cứu về con người và thánh thần, với mục tiêu kết hợp con người và thần linh nhằm đưa con người tiến hóa lên một tầm cao mới.\n" +
-                "Tổ chức HUST nghiên cứu về thánh thần và con người có mục tiêu đối nghịch với những kẻ tôn thờ Celestial Flame, tổ chức này muốn xóa sổ các vị thần và đẩy con người vào một " +
-                "thế giới không có thần linh.\nNhân vật chính sẽ đi đến khu vực X-37 để thu thập thông tin về vị Cổ Thần của Máu.",
+            "Moving to the main timeline:\nThe protagonist (player-defined name) – a scholar at the HUST organization and its finest warrior, under the guidance of Master William, " +
+                "is chosen to research humans and gods, with the goal of merging humanity and divinity to advance human evolution.\n" +
+                "HUST studies gods and humans with goals opposing those of Celestial Flame worshippers, who aim to eradicate the gods and push humanity into a godless world.\n" +
+                "The protagonist will travel to the X-37 area to gather information about the Elder God of Blood.",
 
-            "Các địa điểm trong khu vực X-37:\n" +
-                "+) Hall Of Sins (Sảnh đường của tội lỗi)\n" +
-                "+) Khu vực đánh boss (The Elder God of Death)\n" +
+            "Key locations within X-37:\n" +
+                "+) Hall Of Sins\n" +
+                "+) Boss battle area (The Elder God of Death)\n" +
                 "+) Albedo – The Lost City Of Dreams\n" +
-                "+) The Graveyard of Mankind.\n" +
-                "Nhân vật chính bắt đầu hành trình của mình từ The Graveyard of Mankind, đối đầu với các quái vật điên loạn, đánh bại undead đầu tiên tại đây.",
+                "+) The Graveyard of Mankind\n" +
+                "The protagonist begins their journey at The Graveyard of Mankind, facing frenzied monsters and defeating the first undead encountered there.",
 
-            "Gặp boss đầu tiên: The Prayer Of Sins. Thực thể này do The Elder God of Death tạo ra. Thực thể này vô cùng mạnh, nhân vật chính không thể đánh bại, " +
-                "nhưng nếu đánh bại được, sẽ nhận được phần thưởng và được teleport ngay về bệnh viện của HUST.\n" +
-                "Sau khi quay về, nhân vật chính và Master William nghi ngờ về sự xuất hiện của các undead, điều này là một phát hiện mới chưa được ghi chép trong tài liệu của HUST.",
+            "Encounter the first boss: The Prayer Of Sins. This entity, created by The Elder God of Death, is incredibly powerful. The protagonist cannot defeat it, " +
+                "but if victorious, they will receive a reward and be teleported directly back to HUST's hospital.\n" +
+                "Upon returning, the protagonist and Master William suspect the appearance of undead, a new discovery not documented in HUST's archives.",
 
-            "HUST lập một đội đặc biệt, dưới sự dẫn dắt của nhân vật chính, để tiến sâu vào khu vực X-37, tìm hiểu thêm về vị Cổ Thần của Máu.\n" +
-                "Đến khu vực Sảnh Đường Tội Lỗi, nhân vật chính phát hiện nơi đây là khu nghiên cứu của HUST, nơi đã thực hiện các thí nghiệm ghê rợn nhằm kết hợp máu Crimson Moon với con người.\n" +
-                "Nhân vật chính phát hiện mình là thành công duy nhất của các thí nghiệm này và là một demi-god (Con cái duy nhất của Crimson Moon).",
+            "HUST forms a special team, led by the protagonist, to delve deeper into X-37 and learn more about the Elder God of Blood.\n" +
+                "At the Hall Of Sins, the protagonist discovers this area was HUST's research facility, where gruesome experiments were conducted to merge Crimson Moon's blood with humans.\n" +
+                "The protagonist learns they are the only successful result of these experiments and a demi-god (the sole offspring of Crimson Moon).",
 
-            "Sau khi trở về HUST, nhân vật chính gặp Kafka, một thí nghiệm bị bỏ rơi bởi tổ chức, nhưng sau đó gia nhập Celestial Flame.\n" +
-                "Kafka giải thích rằng HUST thực chất là một tổ chức tàn ác, đã che giấu sự thật về các thí nghiệm của mình và tuyên truyền sự tẩy trắng về Celestial Flame. " +
-                "Nhân vật chính quyết định đi tìm hiểu thêm và khám phá bí mật đằng sau các undead do The Elder God of Death tạo ra, đồng thời khẳng định sự độc ác của HUST."
+            "After returning to HUST, the protagonist encounters Kafka, a discarded experiment by the organization who later joined Celestial Flame.\n" +
+                "Kafka reveals that HUST is, in fact, a malevolent organization that concealed the truth about its experiments while spreading propaganda against Celestial Flame.\n" +
+                "The protagonist decides to investigate further, uncovering the secrets behind the undead created by The Elder God of Death and affirming HUST's cruelty."
         };
-        this.currentPart = 0;  // Bắt đầu từ phần đầu tiên
+        this.currentPart = 0;  // Start with the first part
     }
 
     @Override
     public void show() {
-        stage = new Stage();
-        Gdx.input.setInputProcessor(stage);
+        // Load textures
+        background = new Texture(Gdx.files.internal("screens/background.png"));
+        logo = new Texture(Gdx.files.internal("screens/logo.png"));
+        backButtonTexture = new Texture(Gdx.files.internal("screens/back.png"));
+        nextButtonTexture = new Texture(Gdx.files.internal("screens/next.png"));
 
-        skin = new Skin(Gdx.files.internal("uiskin.json"));  // Cung cấp skin cho các nút
+        // Set up button positions
+        int buttonWidth = 120;
+        int buttonHeight = 60;
+        int screenWidth = Gdx.graphics.getWidth();
+        int screenHeight = Gdx.graphics.getHeight();
 
-        // Tạo nút "Back" để quay lại Menu
-        backButton = new TextButton("Back", skin);
-        backButton.setPosition(300, 50);
-        backButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MenuScreen(game));  // Quay lại Menu khi nhấn Back
-            }
-        });
+        backRect = new Rectangle(
+            screenWidth / 2 - buttonWidth - 20, // Position left of center
+            50,
+            buttonWidth,
+            buttonHeight
+        );
 
-        // Thêm nút vào stage
-        stage.addActor(backButton);
+        nextRect = new Rectangle(
+            screenWidth / 2 + 20, // Position right of center
+            50,
+            buttonWidth,
+            buttonHeight
+        );
     }
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);  // Xóa màn hình
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
-        font.draw(batch, storyParts[currentPart], 50, 400);  // Hiển thị cốt truyện
+        batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.draw(logo, (Gdx.graphics.getWidth() - 400) / 2, Gdx.graphics.getHeight() - 150, 400, 100);
 
+        // Render story text inside the spaceship window
+        float textWidth = 800; // Fit within the spaceship window
+        float textX = (Gdx.graphics.getWidth() - textWidth) / 2; // Center horizontally
+        float textY = Gdx.graphics.getHeight() / 2 + 150; // Adjust vertical position
+        font.draw(batch, storyParts[currentPart], textX, textY, textWidth, -1, true);
+
+        // Render buttons
+        batch.draw(backButtonTexture, backRect.x, backRect.y, backRect.width, backRect.height);
+        batch.draw(nextButtonTexture, nextRect.x, nextRect.y, nextRect.width, nextRect.height);
         batch.end();
 
-        // Kiểm tra nếu người chơi nhấn Enter, chuyển sang phần tiếp theo của cốt truyện
-        if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.ENTER)) {
-            currentPart++;
-            if (currentPart >= storyParts.length) {
-                currentPart = storyParts.length - 1;  // Dừng lại ở phần cuối cùng
+        // Handle button input
+        if (Gdx.input.justTouched()) {
+            Vector2 touchPos = new Vector2(Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY());
+            if (backRect.contains(touchPos)) {
+                game.setScreen(new MenuScreen(game)); // Return to the menu
+            } else if (nextRect.contains(touchPos)) {
+                currentPart++;
+                if (currentPart >= storyParts.length) {
+                    currentPart = storyParts.length - 1; // Stop at the last part
+                }
             }
         }
-
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
-        stage.draw();
     }
 
     @Override
-    public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true);
-    }
+    public void resize(int width, int height) {}
 
     @Override
     public void pause() {}
@@ -125,6 +144,9 @@ public class StoryScreen implements Screen {
     public void dispose() {
         batch.dispose();
         font.dispose();
-        stage.dispose();
+        background.dispose();
+        logo.dispose();
+        backButtonTexture.dispose();
+        nextButtonTexture.dispose();
     }
 }
