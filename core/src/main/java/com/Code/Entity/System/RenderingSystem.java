@@ -7,6 +7,7 @@ import com.Code.Controller.KeyHandler;
 import com.Code.Entity.ECSEngine;
 import com.Code.Main;
 import com.Code.Others.BossAnimation;
+import com.Code.Others.DirectionType;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.ashley.utils.ImmutableArray;
@@ -80,7 +81,7 @@ public class RenderingSystem {
 
         renderDamagedArea(delta);
         renderEnemy(delta);
-      
+
         handlePlayerAttack(delta);
         if(!isAttacking) {
             renderPLayer(delta);

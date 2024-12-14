@@ -13,8 +13,8 @@ public class PauseScreen implements Screen {
 
     private Main game;
     private SpriteBatch batch;
-    private Texture background, resumeButton, menuButton;
-    private Rectangle resumeRect, menuRect; // Các vùng của nút
+    private Texture background, logo, resumeButton, exitButton;
+    private Rectangle resumeRect, exitRect; // Các vùng của nút
 
     public PauseScreen(Main game) {
         this.game = game;
@@ -23,20 +23,32 @@ public class PauseScreen implements Screen {
 
     @Override
     public void show() {
-        // Tải các hình ảnh
-        background = new Texture(Gdx.files.internal("screens/background.png")); // Nền màn hình Pause
-        resumeButton = new Texture(Gdx.files.internal("screens/start.png")); // Nút Resume
-        menuButton = new Texture(Gdx.files.internal("screens/exit.png")); // Nút Menu
+        // Tải các hình ảnh giống giao diện MenuScreen
+        background = new Texture(Gdx.files.internal("screens/background.png"));
+        logo = new Texture(Gdx.files.internal("screens/logo.png"));
+        resumeButton = new Texture(Gdx.files.internal("screens/continue.png"));
+        exitButton = new Texture(Gdx.files.internal("screens/menu.png"));
 
-        // Xác định vị trí và kích thước các nút
-        int buttonWidth = 200;
-        int buttonHeight = 50;
-        int centerX = 1600 / 2; // Trung tâm màn hình theo chiều ngang
-        int centerY = 900 / 2; // Trung tâm màn hình theo chiều dọc
+        // Xác định vị trí và kích thước các thành phần
+        int screenWidth = Gdx.graphics.getWidth();
+        int screenHeight = Gdx.graphics.getHeight();
 
-        // Vị trí các nút
-        resumeRect = new Rectangle(centerX - buttonWidth / 2, centerY + 30, buttonWidth, buttonHeight);
-        menuRect = new Rectangle(centerX - buttonWidth / 2, centerY - 70, buttonWidth, buttonHeight);
+        // Logo: giống MenuScreen
+        int logoWidth = screenWidth / 2;
+        int logoHeight = screenHeight / 4;
+        int logoX = (screenWidth - logoWidth) / 2;
+        int logoY = screenHeight - logoHeight - screenHeight / 12;
+
+        // Nút Resume và Exit
+        int buttonWidth = screenWidth / 10;
+        int buttonHeight = buttonWidth / 2;
+        int buttonSpacing = screenHeight / 30;
+
+        int resumeY = logoY - buttonHeight - 40;
+        int buttonX = (screenWidth - buttonWidth) / 2;
+
+        resumeRect = new Rectangle(buttonX, resumeY, buttonWidth, buttonHeight);
+        exitRect = new Rectangle(buttonX, resumeY - (buttonHeight + buttonSpacing), buttonWidth, buttonHeight);
     }
 
     @Override
@@ -45,10 +57,20 @@ public class PauseScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        int screenWidth = Gdx.graphics.getWidth();
+        int screenHeight = Gdx.graphics.getHeight();
+
+        // Logo: giống MenuScreen
+        int logoWidth = screenWidth / 2;
+        int logoHeight = screenHeight / 4;
+        int logoX = (screenWidth - logoWidth) / 2;
+        int logoY = screenHeight - logoHeight - screenHeight / 12;
+
         batch.begin();
-        batch.draw(background, 0, 0, 1600, 900); // Vẽ nền
+        batch.draw(background, 0, 0, screenWidth, screenHeight); // Vẽ nền
+        batch.draw(logo, logoX, logoY, logoWidth, logoHeight); // Vẽ logo
         batch.draw(resumeButton, resumeRect.x, resumeRect.y, resumeRect.width, resumeRect.height); // Vẽ nút Resume
-        batch.draw(menuButton, menuRect.x, menuRect.y, menuRect.width, menuRect.height); // Vẽ nút Menu
+        batch.draw(exitButton, exitRect.x, exitRect.y, exitRect.width, exitRect.height); // Vẽ nút Exit
         batch.end();
 
         // Xử lý click chuột
@@ -57,8 +79,8 @@ public class PauseScreen implements Screen {
             if (resumeRect.contains(touchPos)) {
                 System.out.println("Resume button clicked");
                 game.setScreen(new PlayScreen(game)); // Quay lại màn hình chơi
-            } else if (menuRect.contains(touchPos)) {
-                System.out.println("Menu button clicked");
+            } else if (exitRect.contains(touchPos)) {
+                System.out.println("Exit button clicked");
                 game.setScreen(new MenuScreen(game)); // Quay lại màn hình menu
             }
         }
@@ -81,7 +103,8 @@ public class PauseScreen implements Screen {
         // Giải phóng tài nguyên
         batch.dispose();
         background.dispose();
+        logo.dispose();
         resumeButton.dispose();
-        menuButton.dispose();
+        exitButton.dispose();
     }
 }
